@@ -11,36 +11,67 @@ interface ResultsDisplayProps {
 function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecommended: boolean }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Design System: Color scheme per scenario type
+  const colors = {
+    'Optimistic': {
+      topBar: 'bg-success',
+      badge: 'bg-success/10 text-success',
+      ring: 'ring-success',
+    },
+    'Realistic': {
+      topBar: 'bg-warning',
+      badge: 'bg-warning/10 text-warning',
+      ring: 'ring-warning',
+    },
+    'Conservative': {
+      topBar: 'bg-danger',
+      badge: 'bg-danger/10 text-danger',
+      ring: 'ring-danger',
+    },
+  };
+
+  const colorScheme = colors[scenario.name];
+
   return (
-    <div className={`bg-white rounded-lg shadow-lg p-6 ${isRecommended ? 'ring-2 ring-primary' : ''}`}>
-      {isRecommended && (
-        <div className="mb-4">
-          <span className="inline-block bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+    <div className={`relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 p-6 lg:p-8 border-2 border-gray-200 ${isRecommended ? `ring-2 ${colorScheme.ring}` : ''}`}>
+      {/* Colored top bar - Design System signature element */}
+      <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-xl ${colorScheme.topBar}`}></div>
+
+      {/* Scenario badge */}
+      <div className="mb-4 flex items-center gap-3">
+        <span className={`inline-block ${colorScheme.badge} px-3 py-1 rounded text-xs font-bold uppercase tracking-wider`}>
+          {scenario.name}
+        </span>
+        {isRecommended && (
+          <span className="inline-block bg-accent/10 text-accent px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
             Recommended
           </span>
-        </div>
-      )}
+        )}
+      </div>
 
-      <h3 className="text-2xl font-bold text-gray-900 mb-4">{scenario.name}</h3>
+      <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-6">{scenario.name} Case</h3>
 
+      {/* Total Investment - Design System: Monospace for numbers */}
       <div className="mb-6">
-        <div className="text-sm text-gray-600 mb-1">Total Investment</div>
-        <div className="text-4xl font-bold text-blue-600">
+        <div className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-2">Total Investment</div>
+        <div className="text-3xl lg:text-4xl font-bold text-gray-900 font-mono tracking-tight">
           {formatCurrency(scenario.total)}
         </div>
       </div>
 
-      <div className="mb-6">
-        <div className="text-sm text-gray-600 mb-1">Timeline to Market Ready</div>
-        <div className="text-2xl font-bold text-gray-900">
-          {scenario.timeline} months
+      {/* Timeline metrics */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <div className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-1">Development</div>
+          <div className="text-lg font-bold text-gray-900 font-mono">
+            {scenario.timeline} mo
+          </div>
         </div>
-      </div>
-
-      <div className="mb-6">
-        <div className="text-sm text-gray-600 mb-1">Break-even Timeline</div>
-        <div className="text-xl font-bold text-gray-700">
-          {scenario.breakEven} months
+        <div>
+          <div className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-1">Break-even</div>
+          <div className="text-lg font-bold text-gray-900 font-mono">
+            {scenario.breakEven} mo
+          </div>
         </div>
       </div>
 
@@ -145,19 +176,19 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
         </div>
       </div>
 
-      {/* Action buttons */}
+      {/* Action buttons - Design System styling */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <button
           onClick={onViewStagedFunding}
-          className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+          className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary-light hover:shadow-lg font-semibold transition-all duration-200 hover:-translate-y-0.5"
         >
-          View Staged Funding
+          View Staged Funding Model
         </button>
         <button
           onClick={onExport}
-          className="px-8 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-medium transition-colors"
+          className="px-8 py-3 bg-white border-2 border-gray-300 text-gray-800 rounded-lg hover:border-accent hover:text-accent hover:shadow-md font-semibold transition-all duration-200"
         >
-          Export Report
+          Export PDF Report
         </button>
       </div>
     </div>
