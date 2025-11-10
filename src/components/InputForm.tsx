@@ -1,20 +1,19 @@
 import { useForm } from 'react-hook-form';
-import type { UserInputs, TechnologyType, CurrentStage, TargetMarket, TeamStatus, RegulatoryEnvironment } from '../types';
-import { GEOGRAPHIC_LOCATIONS } from '../config/coefficients';
+import type { UserInputs, CurrentStage, TeamStatus, RegulatoryEnvironment } from '../types';
+import { GEOGRAPHIC_LOCATIONS, TECHNOLOGY_GROUPS, MARKET_GROUPS } from '../config/coefficients';
 
 interface InputFormProps {
   onSubmit: (data: UserInputs) => void;
   isLoading: boolean;
 }
 
-const technologyTypes: TechnologyType[] = ['Software', 'Hardware', 'Biotech', 'Clean Energy'];
 const currentStages: CurrentStage[] = [
   'Concept (TRL 1-3)',
   'Prototype (TRL 4-6)',
   'Pilot (TRL 7-8)',
-  'Production (TRL 9)',
+  'Market Ready (TRL 9)',
 ];
-const targetMarkets: TargetMarket[] = ['Enterprise B2B', 'SMB B2B', 'Consumer B2C', 'Government'];
+
 const teamStatuses: TeamStatus[] = ['No team yet', 'Partial team', 'Full team assembled'];
 const regulatoryEnvironments: RegulatoryEnvironment[] = ['None', 'Moderate', 'Heavy (FDA/EPA level)'];
 
@@ -35,10 +34,13 @@ export default function InputForm({ onSubmit, isLoading }: InputFormProps) {
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Innovation Investment Calculator
+          Innovation Implementation Calculator™
         </h1>
         <p className="text-xl text-gray-600">
           Calculate your true implementation requirements
+        </p>
+        <p className="text-sm text-gray-500 mt-2">
+          360 Social Impact Studios
         </p>
       </div>
 
@@ -64,26 +66,21 @@ export default function InputForm({ onSubmit, isLoading }: InputFormProps) {
               1. Technology Type
               <span className="text-red-500 ml-1">*</span>
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {technologyTypes.map((type) => (
-                <label
-                  key={type}
-                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                    watchedFields.technologyType === type
-                      ? 'border-primary-600 bg-primary-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    value={type}
-                    {...register('technologyType', { required: 'Technology type is required' })}
-                    className="mr-3"
-                  />
-                  <span className="font-medium">{type}</span>
-                </label>
+            <select
+              {...register('technologyType', { required: 'Technology type is required' })}
+              className="input-field"
+            >
+              <option value="">Select technology type...</option>
+              {Object.entries(TECHNOLOGY_GROUPS).map(([group, types]) => (
+                <optgroup key={group} label={group}>
+                  {types.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
-            </div>
+            </select>
             {errors.technologyType && (
               <p className="text-red-500 text-sm mt-2">{errors.technologyType.message}</p>
             )}
@@ -126,26 +123,21 @@ export default function InputForm({ onSubmit, isLoading }: InputFormProps) {
               3. Target Market
               <span className="text-red-500 ml-1">*</span>
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {targetMarkets.map((market) => (
-                <label
-                  key={market}
-                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                    watchedFields.targetMarket === market
-                      ? 'border-primary-600 bg-primary-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    value={market}
-                    {...register('targetMarket', { required: 'Target market is required' })}
-                    className="mr-3"
-                  />
-                  <span className="font-medium">{market}</span>
-                </label>
+            <select
+              {...register('targetMarket', { required: 'Target market is required' })}
+              className="input-field"
+            >
+              <option value="">Select target market...</option>
+              {Object.entries(MARKET_GROUPS).map(([group, markets]) => (
+                <optgroup key={group} label={group}>
+                  {markets.map((market) => (
+                    <option key={market} value={market}>
+                      {market}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
-            </div>
+            </select>
             {errors.targetMarket && (
               <p className="text-red-500 text-sm mt-2">{errors.targetMarket.message}</p>
             )}
@@ -258,6 +250,9 @@ export default function InputForm({ onSubmit, isLoading }: InputFormProps) {
           <a href="#version-log" className="hover:text-primary-600">
             Version Log
           </a>
+        </div>
+        <div className="text-center text-xs text-gray-500 mt-4">
+          Innovation Implementation Calculator™ v1.0
         </div>
       </footer>
     </div>

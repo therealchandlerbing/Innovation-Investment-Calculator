@@ -140,14 +140,13 @@ export function generatePDFReport(
     const scenarioData = [
       ['Total Investment', formatCurrency(scenario.total)],
       ['Timeline', scenario.timeline + ' months'],
+      ['Break-even', scenario.breakEven + ' months'],
       ['Development Costs', formatCurrency(scenario.breakdown.development)],
       ['  - Technical Development', formatCurrency(scenario.breakdown.technical)],
-      ['  - Infrastructure', formatCurrency(scenario.breakdown.infrastructure)],
       ['  - Regulatory', formatCurrency(scenario.breakdown.regulatory)],
-      ['Go-to-Market Costs', formatCurrency(scenario.breakdown.gtm)],
-      ['  - Market Entry', formatCurrency(scenario.breakdown.marketEntry)],
-      ['  - Scaling', formatCurrency(scenario.breakdown.scaling)],
-      ['Risk Contingency', formatCurrency(scenario.breakdown.riskContingency)],
+      ['Go-to-Market Year 1', formatCurrency(scenario.breakdown.gtmYear1)],
+      ['Go-to-Market Years 2-3', formatCurrency(scenario.breakdown.gtmYears23)],
+      ['Risk Buffer (40%)', formatCurrency(scenario.breakdown.riskBuffer)],
     ];
 
     doc.setFontSize(9);

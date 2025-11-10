@@ -71,10 +71,6 @@ function ScenarioCard({ scenario, isRealistic }: { scenario: Scenario; isRealist
               <span className="font-medium">{formatCurrency(scenario.breakdown.technical)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Infrastructure</span>
-              <span className="font-medium">{formatCurrency(scenario.breakdown.infrastructure)}</span>
-            </div>
-            <div className="flex justify-between">
               <span className="text-gray-600">Regulatory</span>
               <span className="font-medium">{formatCurrency(scenario.breakdown.regulatory)}</span>
             </div>
@@ -107,12 +103,12 @@ function ScenarioCard({ scenario, isRealistic }: { scenario: Scenario; isRealist
         {expanded === 'gtm' && (
           <div className="pl-6 pr-3 py-3 space-y-2 text-sm bg-gray-50 rounded-lg mt-2">
             <div className="flex justify-between">
-              <span className="text-gray-600">Market Entry</span>
-              <span className="font-medium">{formatCurrency(scenario.breakdown.marketEntry)}</span>
+              <span className="text-gray-600">Year 1 GTM</span>
+              <span className="font-medium">{formatCurrency(scenario.breakdown.gtmYear1)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Scaling Costs</span>
-              <span className="font-medium">{formatCurrency(scenario.breakdown.scaling)}</span>
+              <span className="text-gray-600">Years 2-3 GTM</span>
+              <span className="font-medium">{formatCurrency(scenario.breakdown.gtmYears23)}</span>
             </div>
           </div>
         )}
@@ -125,9 +121,9 @@ function ScenarioCard({ scenario, isRealistic }: { scenario: Scenario; isRealist
           className="w-full flex justify-between items-center text-left p-3 hover:bg-gray-50 rounded-lg transition-colors"
           aria-expanded={expanded === 'risk'}
         >
-          <span className="font-medium text-gray-900">Risk Contingency</span>
+          <span className="font-medium text-gray-900">Risk Buffer</span>
           <div className="flex items-center gap-2">
-            <span className="text-gray-600">{formatCurrency(scenario.breakdown.riskContingency)}</span>
+            <span className="text-gray-600">{formatCurrency(scenario.breakdown.riskBuffer)}</span>
             <svg
               className={`w-5 h-5 text-gray-400 transition-transform ${
                 expanded === 'risk' ? 'rotate-180' : ''

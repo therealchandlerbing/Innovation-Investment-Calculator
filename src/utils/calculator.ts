@@ -1,112 +1,119 @@
 import type { UserInputs, CalculationResults, Scenario, CostBreakdown, StagedFunding, FundingPhase } from '../types';
 import {
-  MONTHLY_BURN_RATES,
+  DEVELOPMENT_COSTS,
+  REGULATORY_COSTS,
+  GTM_COSTS,
   DEVELOPMENT_MONTHS,
   TEAM_MULTIPLIERS,
   GEOGRAPHIC_LOCATIONS,
-  TECHNICAL_RISK_PROBABILITY,
-  MARKET_RISK_PROBABILITY,
-  REGULATORY_RISK_PROBABILITY,
-  COMPETITIVE_RISK_PROBABILITY,
-  RISK_IMPACTS,
-  GTM_RAMP_MONTHS,
   SCENARIO_MODIFIERS,
-  INFRASTRUCTURE_COSTS,
-  REGULATORY_COSTS,
-  MARKET_ENTRY_COSTS,
-  SCALING_MULTIPLIER,
+  RISK_BUFFER_PERCENTAGE,
 } from '../config/coefficients';
 
 export function calculateInvestment(inputs: UserInputs): CalculationResults {
   // Get base values
-  const monthlyBurnRate = MONTHLY_BURN_RATES[inputs.technologyType];
+  const baseDevelopmentCost = DEVELOPMENT_COSTS[inputs.technologyType][inputs.currentStage];
+  const regulatoryCost = REGULATORY_COSTS[inputs.technologyType];
+  const gtmData = GTM_COSTS[inputs.targetMarket];
   const developmentMonths = DEVELOPMENT_MONTHS[inputs.currentStage];
   const teamMultiplier = TEAM_MULTIPLIERS[inputs.teamStatus];
   const geoLocation = GEOGRAPHIC_LOCATIONS.find(loc => loc.name === inputs.geographicLocation);
   const geoMultiplier = geoLocation?.index || 1.0;
-  const gtmRampMonths = GTM_RAMP_MONTHS[inputs.targetMarket];
-
-  // Calculate base technical costs
-  const baseTechnical = monthlyBurnRate * developmentMonths * teamMultiplier * geoMultiplier;
-
-  // Calculate infrastructure costs
-  const infrastructure = INFRASTRUCTURE_COSTS[inputs.technologyType] * geoMultiplier;
-
-  // Calculate regulatory costs
-  const regulatory = REGULATORY_COSTS[inputs.regulatoryEnvironment] * geoMultiplier;
-
-  // Calculate total development costs
-  const developmentCosts = baseTechnical + infrastructure + regulatory;
-
-  // Calculate GTM costs
-  const marketEntry = MARKET_ENTRY_COSTS[inputs.targetMarket] * geoMultiplier;
-  const scaling = developmentCosts * SCALING_MULTIPLIER;
-  const gtmCosts = marketEntry + scaling;
-
-  // Calculate risk factor
-  const technicalRiskProb = TECHNICAL_RISK_PROBABILITY[inputs.currentStage];
-  const marketRiskProb = MARKET_RISK_PROBABILITY[inputs.targetMarket];
-  const regulatoryRiskProb = REGULATORY_RISK_PROBABILITY[inputs.regulatoryEnvironment];
-
-  const expectedRiskImpact =
-    (technicalRiskProb * RISK_IMPACTS.technical) +
-    (marketRiskProb * RISK_IMPACTS.market) +
-    (regulatoryRiskProb * RISK_IMPACTS.regulatory) +
-    (COMPETITIVE_RISK_PROBABILITY * RISK_IMPACTS.competitive);
 
   // Calculate realistic scenario (base case)
-  const realisticRiskContingency = (developmentCosts + gtmCosts) * expectedRiskImpact;
-  const realisticTotal = developmentCosts + gtmCosts + realisticRiskContingency;
-  const realisticTimeline = developmentMonths + gtmRampMonths;
+  // Development = baseDev × 1.2 × teamMultiplier × geoMultiplier
+  const realisticDevelopment = baseDevelopmentCost * SCENARIO_MODIFIERS.realistic.development * teamMultiplier * geoMultiplier;
+  const realisticRegulatory = regulatoryCost * geoMultiplier;
+  const realisticTotalDev = realisticDevelopment + realisticRegulatory;
+
+  // GTM = gtm.year1 × 1.2 × geoMultiplier
+  const realisticGTMYear1 = gtmData.year1 * SCENARIO_MODIFIERS.realistic.gtm * geoMultiplier;
+  const realisticGTMYears23 = gtmData.years23 * geoMultiplier;
+
+  // Risk Buffer = development × 0.4
+  const realisticRiskBuffer = realisticTotalDev * RISK_BUFFER_PERCENTAGE;
+
+  // Total = Development + GTM + RiskBuffer
+  const realisticTotal = realisticTotalDev + realisticGTMYear1 + realisticRiskBuffer;
+
+  // Timeline and Break-even
+  const realisticTimeline = Math.round(developmentMonths * SCENARIO_MODIFIERS.realistic.timeline);
+  const realisticBreakEven = Math.round(realisticTimeline * SCENARIO_MODIFIERS.realistic.breakEven);
 
   const realisticBreakdown: CostBreakdown = {
-    development: developmentCosts,
-    technical: baseTechnical,
-    infrastructure,
-    regulatory,
-    gtm: gtmCosts,
-    marketEntry,
-    scaling,
-    riskContingency: realisticRiskContingency,
+    development: realisticTotalDev,
+    technical: realisticDevelopment,
+    regulatory: realisticRegulatory,
+    gtm: realisticGTMYear1,
+    gtmYear1: realisticGTMYear1,
+    gtmYears23: realisticGTMYears23,
+    riskBuffer: realisticRiskBuffer,
     total: realisticTotal,
+    breakEven: realisticBreakEven,
   };
 
   // Calculate optimistic scenario
-  const optimisticDev = developmentCosts * SCENARIO_MODIFIERS.optimistic.development;
-  const optimisticGTM = gtmCosts * SCENARIO_MODIFIERS.optimistic.gtm;
-  const optimisticRisk = (optimisticDev + optimisticGTM) * expectedRiskImpact * SCENARIO_MODIFIERS.optimistic.risk;
-  const optimisticTotal = optimisticDev + optimisticGTM + optimisticRisk;
-  const optimisticTimeline = Math.round(realisticTimeline * 0.85);
+  // Development = baseDev × 0.7 × teamMultiplier × geoMultiplier
+  const optimisticDevelopment = baseDevelopmentCost * SCENARIO_MODIFIERS.optimistic.development * teamMultiplier * geoMultiplier;
+  const optimisticRegulatory = regulatoryCost * geoMultiplier;
+  const optimisticTotalDev = optimisticDevelopment + optimisticRegulatory;
+
+  // GTM = gtm.year1 × 0.6 × geoMultiplier
+  const optimisticGTMYear1 = gtmData.year1 * SCENARIO_MODIFIERS.optimistic.gtm * geoMultiplier;
+  const optimisticGTMYears23 = gtmData.years23 * geoMultiplier;
+
+  // Risk Buffer = development × 0.4
+  const optimisticRiskBuffer = optimisticTotalDev * RISK_BUFFER_PERCENTAGE;
+
+  // Total
+  const optimisticTotal = optimisticTotalDev + optimisticGTMYear1 + optimisticRiskBuffer;
+
+  // Timeline and Break-even
+  const optimisticTimeline = Math.round(developmentMonths * SCENARIO_MODIFIERS.optimistic.timeline);
+  const optimisticBreakEven = Math.round(optimisticTimeline * SCENARIO_MODIFIERS.optimistic.breakEven);
 
   const optimisticBreakdown: CostBreakdown = {
-    development: optimisticDev,
-    technical: baseTechnical * SCENARIO_MODIFIERS.optimistic.development,
-    infrastructure: infrastructure * SCENARIO_MODIFIERS.optimistic.development,
-    regulatory: regulatory * SCENARIO_MODIFIERS.optimistic.development,
-    gtm: optimisticGTM,
-    marketEntry: marketEntry * SCENARIO_MODIFIERS.optimistic.gtm,
-    scaling: scaling * SCENARIO_MODIFIERS.optimistic.gtm,
-    riskContingency: optimisticRisk,
+    development: optimisticTotalDev,
+    technical: optimisticDevelopment,
+    regulatory: optimisticRegulatory,
+    gtm: optimisticGTMYear1,
+    gtmYear1: optimisticGTMYear1,
+    gtmYears23: optimisticGTMYears23,
+    riskBuffer: optimisticRiskBuffer,
     total: optimisticTotal,
+    breakEven: optimisticBreakEven,
   };
 
   // Calculate conservative scenario
-  const conservativeDev = developmentCosts * SCENARIO_MODIFIERS.conservative.development;
-  const conservativeGTM = gtmCosts * SCENARIO_MODIFIERS.conservative.gtm;
-  const conservativeRisk = (conservativeDev + conservativeGTM) * expectedRiskImpact * SCENARIO_MODIFIERS.conservative.risk;
-  const conservativeTotal = conservativeDev + conservativeGTM + conservativeRisk;
-  const conservativeTimeline = Math.round(realisticTimeline * 1.20);
+  // Development = baseDev × 1.8 × teamMultiplier × geoMultiplier
+  const conservativeDevelopment = baseDevelopmentCost * SCENARIO_MODIFIERS.conservative.development * teamMultiplier * geoMultiplier;
+  const conservativeRegulatory = regulatoryCost * geoMultiplier;
+  const conservativeTotalDev = conservativeDevelopment + conservativeRegulatory;
+
+  // GTM = gtm.year1 × 2.0 × geoMultiplier
+  const conservativeGTMYear1 = gtmData.year1 * SCENARIO_MODIFIERS.conservative.gtm * geoMultiplier;
+  const conservativeGTMYears23 = gtmData.years23 * geoMultiplier;
+
+  // Risk Buffer = development × 0.4
+  const conservativeRiskBuffer = conservativeTotalDev * RISK_BUFFER_PERCENTAGE;
+
+  // Total
+  const conservativeTotal = conservativeTotalDev + conservativeGTMYear1 + conservativeRiskBuffer;
+
+  // Timeline and Break-even
+  const conservativeTimeline = Math.round(developmentMonths * SCENARIO_MODIFIERS.conservative.timeline);
+  const conservativeBreakEven = Math.round(conservativeTimeline * SCENARIO_MODIFIERS.conservative.breakEven);
 
   const conservativeBreakdown: CostBreakdown = {
-    development: conservativeDev,
-    technical: baseTechnical * SCENARIO_MODIFIERS.conservative.development,
-    infrastructure: infrastructure * SCENARIO_MODIFIERS.conservative.development,
-    regulatory: regulatory * SCENARIO_MODIFIERS.conservative.development,
-    gtm: conservativeGTM,
-    marketEntry: marketEntry * SCENARIO_MODIFIERS.conservative.gtm,
-    scaling: scaling * SCENARIO_MODIFIERS.conservative.gtm,
-    riskContingency: conservativeRisk,
+    development: conservativeTotalDev,
+    technical: conservativeDevelopment,
+    regulatory: conservativeRegulatory,
+    gtm: conservativeGTMYear1,
+    gtmYear1: conservativeGTMYear1,
+    gtmYears23: conservativeGTMYears23,
+    riskBuffer: conservativeRiskBuffer,
     total: conservativeTotal,
+    breakEven: conservativeBreakEven,
   };
 
   const scenarios: Scenario[] = [
@@ -114,18 +121,21 @@ export function calculateInvestment(inputs: UserInputs): CalculationResults {
       name: 'Optimistic',
       total: optimisticTotal,
       timeline: optimisticTimeline,
+      breakEven: optimisticBreakEven,
       breakdown: optimisticBreakdown,
     },
     {
       name: 'Realistic',
       total: realisticTotal,
       timeline: realisticTimeline,
+      breakEven: realisticBreakEven,
       breakdown: realisticBreakdown,
     },
     {
       name: 'Conservative',
       total: conservativeTotal,
       timeline: conservativeTimeline,
+      breakEven: conservativeBreakEven,
       breakdown: conservativeBreakdown,
     },
   ];
@@ -147,42 +157,45 @@ export function calculateStagedFunding(realisticScenario: Scenario): StagedFundi
   const totalInvestment = realisticScenario.total;
   const totalTimeline = realisticScenario.timeline;
 
-  // Phase 1: Validation (25% of total)
-  const phase1Investment = totalInvestment * 0.25;
-  const phase1Duration = Math.round(totalTimeline * 0.30);
+  // Phase 1: Validate (15% of total, Months 0-6)
+  const phase1Investment = totalInvestment * 0.15;
+  const phase1Duration = 6;
 
-  // Phase 2: Development (50% of total)
-  const phase2Investment = totalInvestment * 0.50;
-  const phase2Duration = Math.round(totalTimeline * 0.45);
+  // Phase 2: Build (35% of total, Months 7-18)
+  const phase2Investment = totalInvestment * 0.35;
+  const phase2Duration = 12;
 
-  // Phase 3: Scaling (25% of total)
-  const phase3Investment = totalInvestment * 0.25;
-  const phase3Duration = Math.round(totalTimeline * 0.25);
+  // Phase 3: Scale (50% of total, Months 19-30)
+  const phase3Investment = totalInvestment * 0.50;
+  const phase3Duration = Math.max(12, totalTimeline - phase1Duration - phase2Duration);
 
   const phases: FundingPhase[] = [
     {
-      name: 'Phase 1: Validation',
+      name: 'Phase 1: Validate',
       investment: phase1Investment,
       duration: phase1Duration,
-      objective: 'Validate core technology and product-market fit',
-      keyMilestone: 'Working prototype with initial customer validation',
-      decisionGate: 'Technical feasibility confirmed, clear market need identified',
+      percentage: 15,
+      objective: 'Proof of concept and initial customer validation',
+      keyMilestone: 'Technical feasibility confirmed, clear market need identified',
+      decisionGate: 'Technical milestone achieved?',
     },
     {
-      name: 'Phase 2: Development',
+      name: 'Phase 2: Build',
       investment: phase2Investment,
       duration: phase2Duration,
-      objective: 'Build production-ready product and establish go-to-market foundation',
-      keyMilestone: 'Production-ready product, pilot customers acquired',
-      decisionGate: 'Product meets quality standards, positive customer feedback, clear path to scale',
+      percentage: 35,
+      objective: 'Product development and market validation',
+      keyMilestone: 'Product meets quality standards, positive customer feedback',
+      decisionGate: 'Market traction confirmed?',
     },
     {
-      name: 'Phase 3: Scaling',
+      name: 'Phase 3: Scale',
       investment: phase3Investment,
       duration: phase3Duration,
-      objective: 'Scale operations and achieve market penetration',
-      keyMilestone: 'Revenue growth, market traction, operational efficiency',
-      decisionGate: 'Sustainable unit economics, repeatable sales process, path to profitability',
+      percentage: 50,
+      objective: 'Market expansion and team scaling',
+      keyMilestone: 'Sustainable unit economics, repeatable sales process',
+      decisionGate: 'Unit economics proven?',
     },
   ];
 
