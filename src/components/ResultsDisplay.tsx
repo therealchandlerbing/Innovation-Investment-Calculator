@@ -74,24 +74,22 @@ function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecom
             <span className="font-medium">{formatCurrency(scenario.breakdown.regulatory)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Go-to-Market (3 years)</span>
-            <span className="font-medium">{formatCurrency(scenario.breakdown.gtm)}</span>
-          </div>
-          <div className="flex justify-between pl-4">
-            <span className="text-gray-500 text-sm">└ Year 1</span>
-            <span className="font-medium text-sm">{formatCurrency(scenario.breakdown.gtmYear1)}</span>
-          </div>
-          <div className="flex justify-between pl-4">
-            <span className="text-gray-500 text-sm">└ Years 2-3</span>
-            <span className="font-medium text-sm">{formatCurrency(scenario.breakdown.gtmYears23)}</span>
+            <span className="text-gray-600">GTM Year 1</span>
+            <span className="font-medium">{formatCurrency(scenario.breakdown.gtmYear1)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Risk Buffer (40%)</span>
+            <span className="text-gray-600">Risk Buffer (40% of dev)</span>
             <span className="font-medium">{formatCurrency(scenario.breakdown.riskBuffer)}</span>
           </div>
           <div className="flex justify-between border-t border-gray-300 pt-3 mt-3">
             <span className="text-gray-900 font-semibold">Total Investment</span>
             <span className="font-bold">{formatCurrency(scenario.breakdown.total)}</span>
+          </div>
+          <div className="mt-4 pt-3 border-t border-gray-200">
+            <div className="flex justify-between">
+              <span className="text-gray-500 text-sm italic">GTM Years 2-3 (not in total)</span>
+              <span className="text-gray-500 text-sm italic">{formatCurrency(scenario.breakdown.gtmYears23)}</span>
+            </div>
           </div>
         </div>
       )}
@@ -141,7 +139,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
               <span className="font-bold">
                 {formatCurrency(results.confidenceInterval.min)} - {formatCurrency(results.confidenceInterval.max)}
               </span>
-              {' '}(±20%)
+              {' '}(±15%)
             </p>
           </div>
         </div>
