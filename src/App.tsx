@@ -44,7 +44,7 @@ function App() {
 
   const handleExport = () => {
     if (inputs && results) {
-      const stagedFunding = calculateStagedFunding(results.realistic);
+      const stagedFunding = calculateStagedFunding(results);
       generatePDF(inputs, results, stagedFunding);
     }
   };
@@ -64,7 +64,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
@@ -116,7 +116,7 @@ function App() {
 
         {currentScreen === 'staged' && results && (
           <StagedFunding
-            phases={calculateStagedFunding(results.realistic)}
+            stagedFunding={calculateStagedFunding(results)}
             onBack={handleBackToResults}
           />
         )}
@@ -141,12 +141,12 @@ function App() {
               <h3 className="font-medium text-gray-900 mb-3">Resources</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="/methodology.pdf" className="text-gray-600 hover:text-primary">
+                  <a href="/vianeo-tools/methodology.pdf" className="text-gray-600 hover:text-blue-600">
                     Methodology
                   </a>
                 </li>
                 <li>
-                  <a href="#data-sources" className="text-gray-600 hover:text-primary">
+                  <a href="#data-sources" className="text-gray-600 hover:text-blue-600">
                     Data Sources
                   </a>
                 </li>

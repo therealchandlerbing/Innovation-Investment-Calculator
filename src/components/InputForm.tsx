@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import type { UserInputs, TechnologyType, Stage, Market, TeamStatus, RegulatoryEnv } from '../types/calculator';
-import { COEFFICIENTS } from '../utils/coefficients';
+import type { UserInputs, TechnologyType, Stage, Market, TeamStatus, RegulatoryEnvironment } from '../types/calculator';
+import { TECHNOLOGY_GROUPS, MARKET_GROUPS, GEOGRAPHIC_LOCATIONS } from '../utils/coefficients';
 
 interface InputFormProps {
   onSubmit: (inputs: UserInputs) => void;
@@ -10,35 +10,33 @@ interface InputFormProps {
 export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
   const [formData, setFormData] = useState<Partial<UserInputs>>({});
 
-  const technologyTypes: TechnologyType[] = ['Software', 'Hardware', 'Biotech', 'Clean Energy'];
   const stages: Stage[] = [
     'Concept (TRL 1-3)',
     'Prototype (TRL 4-6)',
     'Pilot (TRL 7-8)',
-    'Production (TRL 9)',
-  ];
-  const markets: Market[] = ['Enterprise B2B', 'SMB B2B', 'Consumer B2C', 'Government'];
-  const teamStatuses: TeamStatus[] = [
-    'No team yet',
-    'Partial team (1-3 people)',
-    'Full team assembled (4+ people)',
-  ];
-  const regulatoryEnvs: RegulatoryEnv[] = [
-    'None',
-    'Moderate (compliance, certifications)',
-    'Heavy (FDA, EPA, nuclear)',
+    'Market Ready (TRL 9)',
   ];
 
-  const locations = Object.keys(COEFFICIENTS.geographyModifiers);
+  const teamStatuses: TeamStatus[] = [
+    'No team yet',
+    'Partial team',
+    'Full team assembled',
+  ];
+
+  const regulatoryEnvs: RegulatoryEnvironment[] = [
+    'None',
+    'Moderate',
+    'Heavy (FDA/EPA level)',
+  ];
 
   const isFormComplete = () => {
     return (
       formData.technologyType &&
-      formData.stage &&
-      formData.market &&
-      formData.location &&
+      formData.currentStage &&
+      formData.targetMarket &&
+      formData.geographicLocation &&
       formData.teamStatus &&
-      formData.regulatory
+      formData.regulatoryEnvironment
     );
   };
 
@@ -55,36 +53,36 @@ export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
 
   const examples = [
     {
-      name: 'Low-Cost Software',
+      name: 'EdTech + K-12',
       data: {
-        technologyType: 'Software' as TechnologyType,
-        stage: 'Prototype (TRL 4-6)' as Stage,
-        market: 'SMB B2B' as Market,
-        location: 'Remote US',
-        teamStatus: 'Partial team (1-3 people)' as TeamStatus,
-        regulatory: 'None' as RegulatoryEnv,
+        technologyType: 'EdTech/Learning Platform' as TechnologyType,
+        currentStage: 'Prototype (TRL 4-6)' as Stage,
+        targetMarket: 'K-12 Education Systems' as Market,
+        geographicLocation: 'Austin',
+        teamStatus: 'Partial team' as TeamStatus,
+        regulatoryEnvironment: 'Moderate' as RegulatoryEnvironment,
       },
     },
     {
-      name: 'High-Cost Biotech',
+      name: 'Space Tech + Military',
       data: {
-        technologyType: 'Biotech' as TechnologyType,
-        stage: 'Pilot (TRL 7-8)' as Stage,
-        market: 'Enterprise B2B' as Market,
-        location: 'San Francisco Bay Area',
-        teamStatus: 'No team yet' as TeamStatus,
-        regulatory: 'Heavy (FDA, EPA, nuclear)' as RegulatoryEnv,
+        technologyType: 'Space Technology' as TechnologyType,
+        currentStage: 'Pilot (TRL 7-8)' as Stage,
+        targetMarket: 'Military/Defense' as Market,
+        geographicLocation: 'San Francisco Bay Area',
+        teamStatus: 'Full team assembled' as TeamStatus,
+        regulatoryEnvironment: 'Heavy (FDA/EPA level)' as RegulatoryEnvironment,
       },
     },
     {
-      name: 'Mid-Range Hardware',
+      name: 'FinTech + SMB',
       data: {
-        technologyType: 'Hardware' as TechnologyType,
-        stage: 'Production (TRL 9)' as Stage,
-        market: 'Consumer B2C' as Market,
-        location: 'Austin',
-        teamStatus: 'Full team assembled (4+ people)' as TeamStatus,
-        regulatory: 'Moderate (compliance, certifications)' as RegulatoryEnv,
+        technologyType: 'FinTech/Financial Services' as TechnologyType,
+        currentStage: 'Market Ready (TRL 9)' as Stage,
+        targetMarket: 'Small Business B2B (<500 employees)' as Market,
+        geographicLocation: 'Remote US',
+        teamStatus: 'Full team assembled' as TeamStatus,
+        regulatoryEnvironment: 'Moderate' as RegulatoryEnvironment,
       },
     },
   ];
@@ -94,7 +92,7 @@ export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
       <div className="bg-white rounded-lg shadow-lg p-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Innovation Investment Calculator</h1>
         <p className="text-gray-600 mb-8">
-          Get an evidence-based estimate of your innovation investment requirements
+          Get an evidence-based estimate of your innovation investment requirements across 30 technology types and 33 market segments
         </p>
 
         {onLoadExample && (
@@ -120,19 +118,23 @@ export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Technology Type *
+              Technology Type * <span className="text-gray-500 text-xs">(30 options across 6 groups)</span>
             </label>
             <select
               value={formData.technologyType || ''}
               onChange={(e) => handleChange('technologyType', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select technology type...</option>
-              {technologyTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
+              {Object.entries(TECHNOLOGY_GROUPS).map(([groupName, technologies]) => (
+                <optgroup key={groupName} label={groupName}>
+                  {technologies.map((tech) => (
+                    <option key={tech} value={tech}>
+                      {tech}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>
@@ -142,9 +144,9 @@ export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
               Current Development Stage *
             </label>
             <select
-              value={formData.stage || ''}
-              onChange={(e) => handleChange('stage', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              value={formData.currentStage || ''}
+              onChange={(e) => handleChange('currentStage', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select development stage...</option>
@@ -158,19 +160,23 @@ export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Target Market *
+              Target Market * <span className="text-gray-500 text-xs">(33 segments across 8 groups)</span>
             </label>
             <select
-              value={formData.market || ''}
-              onChange={(e) => handleChange('market', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              value={formData.targetMarket || ''}
+              onChange={(e) => handleChange('targetMarket', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select target market...</option>
-              {markets.map((market) => (
-                <option key={market} value={market}>
-                  {market}
-                </option>
+              {Object.entries(MARKET_GROUPS).map(([groupName, markets]) => (
+                <optgroup key={groupName} label={groupName}>
+                  {markets.map((market) => (
+                    <option key={market} value={market}>
+                      {market}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </div>
@@ -180,15 +186,15 @@ export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
               Geographic Location *
             </label>
             <select
-              value={formData.location || ''}
-              onChange={(e) => handleChange('location', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              value={formData.geographicLocation || ''}
+              onChange={(e) => handleChange('geographicLocation', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select location...</option>
-              {locations.map((location) => (
-                <option key={location} value={location}>
-                  {location}
+              {GEOGRAPHIC_LOCATIONS.map((location) => (
+                <option key={location.name} value={location.name}>
+                  {location.name} (Cost Index: {location.index})
                 </option>
               ))}
             </select>
@@ -201,7 +207,7 @@ export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
             <select
               value={formData.teamStatus || ''}
               onChange={(e) => handleChange('teamStatus', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select team status...</option>
@@ -218,9 +224,9 @@ export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
               Regulatory Environment *
             </label>
             <select
-              value={formData.regulatory || ''}
-              onChange={(e) => handleChange('regulatory', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              value={formData.regulatoryEnvironment || ''}
+              onChange={(e) => handleChange('regulatoryEnvironment', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
               <option value="">Select regulatory environment...</option>
@@ -237,7 +243,7 @@ export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
             disabled={!isFormComplete()}
             className={`w-full py-3 px-6 rounded-md text-white font-medium transition-colors ${
               isFormComplete()
-                ? 'bg-primary hover:bg-primary-light cursor-pointer'
+                ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
                 : 'bg-gray-300 cursor-not-allowed'
             }`}
           >

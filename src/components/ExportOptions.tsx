@@ -14,7 +14,7 @@ export default function ExportOptions({ inputs, results }: ExportOptionsProps) {
   const [showLinkCopied, setShowLinkCopied] = useState(false);
 
   const handleDownloadPDF = () => {
-    const stagedFunding = calculateStagedFunding(results.realistic);
+    const stagedFunding = calculateStagedFunding(results);
     generatePDF(inputs, results, stagedFunding);
   };
 
@@ -39,7 +39,7 @@ export default function ExportOptions({ inputs, results }: ExportOptionsProps) {
           {/* Download PDF button */}
           <button
             onClick={handleDownloadPDF}
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-primary text-white rounded-lg hover:bg-primary-light font-medium transition-colors"
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -94,10 +94,10 @@ export default function ExportOptions({ inputs, results }: ExportOptionsProps) {
           {/* Methodology link */}
           <div className="mt-8 pt-6 border-t border-gray-200">
             <a
-              href="/methodology.pdf"
+              href="/vianeo-tools/methodology.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 text-primary hover:text-primary-light font-medium"
+              className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

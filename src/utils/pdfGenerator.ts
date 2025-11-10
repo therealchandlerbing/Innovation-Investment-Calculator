@@ -1,8 +1,8 @@
 import jsPDF from 'jspdf';
-import type { UserInputs, CalculationResults } from '../types/calculator';
+import type { UserInputs, CalculationResults, StagedFunding } from '../types/calculator';
 import { formatCurrency } from './calculations';
 
-export function generatePDF(inputs: UserInputs, results: CalculationResults, stagedFunding: any[]): void {
+export function generatePDF(inputs: UserInputs, results: CalculationResults, stagedFunding: StagedFunding): void {
   const pdf = new jsPDF('p', 'mm', 'a4');
   const pageWidth = pdf.internal.pageSize.getWidth();
   const margin = 20;
@@ -20,25 +20,28 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   // Inputs
   pdf.text(`Technology: ${inputs.technologyType}`, margin, yPos);
   yPos += 7;
-  pdf.text(`Stage: ${inputs.stage}`, margin, yPos);
+  pdf.text(`Stage: ${inputs.currentStage}`, margin, yPos);
   yPos += 7;
-  pdf.text(`Market: ${inputs.market}`, margin, yPos);
+  pdf.text(`Market: ${inputs.targetMarket}`, margin, yPos);
   yPos += 7;
-  pdf.text(`Location: ${inputs.location}`, margin, yPos);
+  pdf.text(`Location: ${inputs.geographicLocation}`, margin, yPos);
   yPos += 7;
   pdf.text(`Team: ${inputs.teamStatus}`, margin, yPos);
   yPos += 7;
-  pdf.text(`Regulatory: ${inputs.regulatory}`, margin, yPos);
+  pdf.text(`Regulatory: ${inputs.regulatoryEnvironment}`, margin, yPos);
   yPos += 15;
 
   // Realistic scenario
+  const realisticScenario = results.scenarios[1]; // Realistic is middle scenario
   pdf.setFontSize(14);
-  pdf.text('Recommended Investment: ' + formatCurrency(results.realistic.costs.total), margin, yPos);
+  pdf.text('Recommended Investment: ' + formatCurrency(realisticScenario.total), margin, yPos);
   yPos += 10;
   pdf.setFontSize(10);
-  pdf.text(`Timeline: ${results.realistic.timeline} months`, margin, yPos);
+  pdf.text(`Timeline: ${realisticScenario.timeline} months`, margin, yPos);
   yPos += 7;
-  pdf.text(`Confidence Range: ${formatCurrency(results.confidenceRange.low)} - ${formatCurrency(results.confidenceRange.high)}`, margin, yPos);
+  pdf.text(`Break-even: ${realisticScenario.breakEven} months`, margin, yPos);
+  yPos += 7;
+  pdf.text(`Confidence Range: ${formatCurrency(results.confidenceInterval.min)} - ${formatCurrency(results.confidenceInterval.max)}`, margin, yPos);
 
   // Page 2: Full Breakdown
   pdf.addPage();
@@ -48,24 +51,25 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   yPos = 45;
   pdf.setFontSize(10);
 
-  ['optimistic', 'realistic', 'conservative'].forEach((scenario) => {
-    const data = results[scenario as keyof CalculationResults];
-    if (typeof data === 'object' && 'costs' in data) {
-      pdf.setFontSize(12);
-      pdf.text(scenario.charAt(0).toUpperCase() + scenario.slice(1), margin, yPos);
-      yPos += 8;
-      pdf.setFontSize(10);
-      pdf.text(`Total: ${formatCurrency(data.costs.total)}`, margin + 5, yPos);
-      yPos += 6;
-      pdf.text(`Development: ${formatCurrency(data.costs.development)}`, margin + 5, yPos);
-      yPos += 6;
-      pdf.text(`Go-to-Market: ${formatCurrency(data.costs.gtm)}`, margin + 5, yPos);
-      yPos += 6;
-      pdf.text(`Risk Contingency: ${formatCurrency(data.costs.risk)}`, margin + 5, yPos);
-      yPos += 6;
-      pdf.text(`Timeline: ${data.timeline} months`, margin + 5, yPos);
-      yPos += 12;
-    }
+  results.scenarios.forEach((scenario) => {
+    pdf.setFontSize(12);
+    pdf.text(scenario.name, margin, yPos);
+    yPos += 8;
+    pdf.setFontSize(10);
+    pdf.text(`Total: ${formatCurrency(scenario.total)}`, margin + 5, yPos);
+    yPos += 6;
+    pdf.text(`Development: ${formatCurrency(scenario.breakdown.development)}`, margin + 5, yPos);
+    yPos += 6;
+    pdf.text(`Regulatory: ${formatCurrency(scenario.breakdown.regulatory)}`, margin + 5, yPos);
+    yPos += 6;
+    pdf.text(`Go-to-Market (3yr): ${formatCurrency(scenario.breakdown.gtm)}`, margin + 5, yPos);
+    yPos += 6;
+    pdf.text(`Risk Buffer: ${formatCurrency(scenario.breakdown.riskBuffer)}`, margin + 5, yPos);
+    yPos += 6;
+    pdf.text(`Timeline: ${scenario.timeline} months`, margin + 5, yPos);
+    yPos += 6;
+    pdf.text(`Break-even: ${scenario.breakEven} months`, margin + 5, yPos);
+    yPos += 12;
   });
 
   // Page 3: Staged Funding
@@ -74,18 +78,18 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   pdf.text('Staged Funding Model', margin, 30);
 
   yPos = 45;
-  stagedFunding.forEach((phase, index) => {
+  stagedFunding.phases.forEach((phase) => {
     pdf.setFontSize(12);
-    pdf.text(`Phase ${index + 1}: ${phase.name}`, margin, yPos);
+    pdf.text(`${phase.name}`, margin, yPos);
     yPos += 8;
     pdf.setFontSize(10);
-    pdf.text(`Investment: ${formatCurrency(phase.investment)}`, margin + 5, yPos);
+    pdf.text(`Investment: ${formatCurrency(phase.investment)} (${phase.percentage}%)`, margin + 5, yPos);
     yPos += 6;
     pdf.text(`Duration: ${phase.duration} months`, margin + 5, yPos);
     yPos += 6;
     pdf.text(`Objective: ${phase.objective}`, margin + 5, yPos);
     yPos += 6;
-    const milestone = pdf.splitTextToSize(`Milestone: ${phase.milestone}`, pageWidth - 2 * margin - 5);
+    const milestone = pdf.splitTextToSize(`Milestone: ${phase.keyMilestone}`, pageWidth - 2 * margin - 5);
     pdf.text(milestone, margin + 5, yPos);
     yPos += 6 * milestone.length;
     const gate = pdf.splitTextToSize(`Decision Gate: ${phase.decisionGate}`, pageWidth - 2 * margin - 5);
@@ -102,17 +106,23 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   yPos = 45;
   pdf.text('This calculator uses validated industry data including:', margin, yPos);
   yPos += 8;
-  pdf.text('• Bureau of Labor Statistics wage data', margin + 5, yPos);
+  pdf.text('• 30 technology types across 6 major categories', margin + 5, yPos);
   yPos += 6;
-  pdf.text('• Industry benchmark research', margin + 5, yPos);
+  pdf.text('• 33 market segments across 8 industry groups', margin + 5, yPos);
+  yPos += 6;
+  pdf.text('• Geographic cost modifiers for 20+ locations', margin + 5, yPos);
+  yPos += 6;
+  pdf.text('• Regulatory environment assessments', margin + 5, yPos);
   yPos += 6;
   pdf.text('• Historical project data from 100+ implementations', margin + 5, yPos);
   yPos += 10;
-  pdf.text('Core Formula: TOTAL = (DEVELOPMENT + GTM) × (1 + RISK_FACTOR)', margin, yPos);
+  pdf.text('Core Formula:', margin, yPos);
+  yPos += 6;
+  pdf.text('TOTAL = (DEVELOPMENT + REGULATORY + GTM) × (1 + 0.40)', margin + 5, yPos);
   yPos += 10;
   pdf.text('For complete methodology, visit:', margin, yPos);
   yPos += 6;
-  pdf.text('github.com/yourusername/innovation-calculator', margin, yPos);
+  pdf.text('github.com/therealchandlerbing/vianeo-tools', margin, yPos);
 
   // Footer
   pdf.setFontSize(8);

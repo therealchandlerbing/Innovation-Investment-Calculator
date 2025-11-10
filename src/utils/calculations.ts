@@ -1,107 +1,165 @@
-import { COEFFICIENTS } from './coefficients';
-import type { UserInputs, CalculationResults } from '../types/calculator';
+import {
+  DEVELOPMENT_COSTS,
+  REGULATORY_COSTS,
+  GTM_COSTS,
+  STAGE_TIMELINES,
+  GEOGRAPHIC_LOCATIONS,
+} from './coefficients';
+import type { UserInputs, CalculationResults, Scenario, CostBreakdown, StagedFunding, FundingPhase } from '../types/calculator';
 
 export function calculateInvestment(inputs: UserInputs): CalculationResults {
-  // Base calculations
-  const burnRate = COEFFICIENTS.monthlyBurnRates[inputs.technologyType];
-  const devMonths = COEFFICIENTS.developmentMonths[inputs.stage];
-  const teamMultiplier = COEFFICIENTS.teamMultipliers[inputs.teamStatus];
-  const geoModifier = COEFFICIENTS.geographyModifiers[inputs.location as keyof typeof COEFFICIENTS.geographyModifiers];
-  const gtmMonths = COEFFICIENTS.gtmRampMonths[inputs.market];
+  // Get base costs from new comprehensive models
+  const developmentCost = DEVELOPMENT_COSTS[inputs.technologyType][inputs.currentStage];
+  const regulatoryCost = REGULATORY_COSTS[inputs.technologyType];
+  const gtmYear1 = GTM_COSTS[inputs.targetMarket].year1;
+  const gtmYears23 = GTM_COSTS[inputs.targetMarket].years23;
+  const timeline = STAGE_TIMELINES[inputs.currentStage];
 
-  // Development costs
-  const baseDevelopment = burnRate * devMonths * teamMultiplier * geoModifier;
+  // Get geographic cost modifier
+  const geoLocation = GEOGRAPHIC_LOCATIONS.find(loc => loc.name === inputs.geographicLocation);
+  const geoModifier = geoLocation ? geoLocation.index : 1.0;
 
-  // GTM costs (typically 60-80% of development for B2B, 80-120% for B2C)
-  const gtmRatio = inputs.market.includes('B2C') ? 1.0 : 0.7;
-  const baseGTM = baseDevelopment * gtmRatio;
+  // Apply team status multiplier
+  const teamMultipliers = {
+    'No team yet': 1.25,
+    'Partial team': 1.10,
+    'Full team assembled': 1.00,
+  };
+  const teamMultiplier = teamMultipliers[inputs.teamStatus];
 
-  // Risk calculation
-  const techRisk = COEFFICIENTS.riskProbabilities.technical[inputs.stage];
-  const marketRisk = COEFFICIENTS.riskProbabilities.market[inputs.market];
-  const regRisk = COEFFICIENTS.riskProbabilities.regulatory[inputs.regulatory];
-  const compRisk = COEFFICIENTS.riskProbabilities.competitive;
+  // Apply regulatory environment multiplier
+  const regulatoryMultipliers = {
+    'None': 0.5,
+    'Moderate': 1.0,
+    'Heavy (FDA/EPA level)': 1.8,
+  };
+  const regulatoryMultiplier = regulatoryMultipliers[inputs.regulatoryEnvironment];
 
-  const totalRiskProb =
-    (techRisk * COEFFICIENTS.riskImpacts.technical) +
-    (marketRisk * COEFFICIENTS.riskImpacts.market) +
-    (regRisk * COEFFICIENTS.riskImpacts.regulatory) +
-    (compRisk * COEFFICIENTS.riskImpacts.competitive);
+  // Scenario modifiers
+  const scenarioConfigs = {
+    'Optimistic': { devMultiplier: 0.85, timelineMultiplier: 1.5 },
+    'Realistic': { devMultiplier: 1.0, timelineMultiplier: 1.75 },
+    'Conservative': { devMultiplier: 1.20, timelineMultiplier: 2.25 },
+  };
 
-  const baseRiskContingency = (baseDevelopment + baseGTM) * totalRiskProb;
+  // Calculate scenarios
+  const scenarios: Scenario[] = Object.entries(scenarioConfigs).map(([name, config]) => {
+    // Base costs with modifiers
+    const development = developmentCost * config.devMultiplier * geoModifier * teamMultiplier;
+    const regulatory = regulatoryCost * regulatoryMultiplier * config.devMultiplier;
+    const gtmTotal = (gtmYear1 + gtmYears23) * config.devMultiplier * geoModifier;
 
-  // Calculate three scenarios
-  const scenarios = ['optimistic', 'realistic', 'conservative'] as const;
-  const results: any = {};
+    // Technical costs (included in development)
+    const technical = development * 0.15; // ~15% of development goes to technical infrastructure
 
-  scenarios.forEach(scenario => {
-    const modifiers = COEFFICIENTS.scenarioModifiers[scenario];
+    // Risk buffer (40% of base costs)
+    const riskBuffer = (development + regulatory + gtmTotal) * 0.40;
 
-    const development = baseDevelopment * modifiers.development;
-    const gtm = baseGTM * modifiers.gtm;
-    const risk = baseRiskContingency * modifiers.risk;
-    const total = development + gtm + risk;
-    const timeline = devMonths + (gtmMonths * modifiers.development);
+    // Total investment
+    const total = development + regulatory + gtmTotal + riskBuffer;
 
-    results[scenario] = {
-      name: scenario.charAt(0).toUpperCase() + scenario.slice(1),
-      costs: {
-        development: Math.round(development / 10000) * 10000,
-        gtm: Math.round(gtm / 10000) * 10000,
-        risk: Math.round(risk / 10000) * 10000,
-        total: Math.round(total / 10000) * 10000,
-      },
+    // Break-even timeline
+    const breakEven = timeline * config.timelineMultiplier;
+
+    const breakdown: CostBreakdown = {
+      development: Math.round(development),
+      technical: Math.round(technical),
+      regulatory: Math.round(regulatory),
+      gtm: Math.round(gtmTotal),
+      gtmYear1: Math.round(gtmYear1 * config.devMultiplier * geoModifier),
+      gtmYears23: Math.round(gtmYears23 * config.devMultiplier * geoModifier),
+      riskBuffer: Math.round(riskBuffer),
+      total: Math.round(total),
+      breakEven: Math.round(breakEven),
+    };
+
+    return {
+      name: name as 'Optimistic' | 'Realistic' | 'Conservative',
+      total: breakdown.total,
       timeline: Math.round(timeline),
+      breakEven: breakdown.breakEven,
+      breakdown,
     };
   });
 
-  // Confidence range (±15% of realistic)
-  const realisticTotal = results.realistic.costs.total;
+  // Confidence interval (±20% of realistic scenario)
+  const realisticTotal = scenarios[1].total; // Realistic is the middle scenario
+  const confidenceInterval = {
+    min: Math.round(realisticTotal * 0.80),
+    max: Math.round(realisticTotal * 1.20),
+  };
 
   return {
-    ...results,
-    confidenceRange: {
-      low: Math.round(realisticTotal * 0.85 / 10000) * 10000,
-      high: Math.round(realisticTotal * 1.15 / 10000) * 10000,
-    },
+    scenarios,
+    confidenceInterval,
+    inputs,
   };
 }
 
-export function calculateStagedFunding(realistic: any): any[] {
-  const total = realistic.costs.total;
-  const timeline = realistic.timeline;
+export function calculateStagedFunding(results: CalculationResults): StagedFunding {
+  const realisticScenario = results.scenarios.find(s => s.name === 'Realistic');
+  if (!realisticScenario) {
+    throw new Error('Realistic scenario not found');
+  }
 
-  return [
+  const total = realisticScenario.total;
+  const timeline = realisticScenario.timeline;
+
+  // Phase 1: Validate (25% of investment, 30% of timeline)
+  const phase1Investment = Math.round(total * 0.25);
+  const phase1Duration = Math.round(timeline * 0.30);
+
+  // Phase 2: Build (50% of investment, 45% of timeline)
+  const phase2Investment = Math.round(total * 0.50);
+  const phase2Duration = Math.round(timeline * 0.45);
+
+  // Phase 3: Scale (25% of investment, 25% of timeline)
+  const phase3Investment = total - phase1Investment - phase2Investment; // Ensure exact total
+  const phase3Duration = timeline - phase1Duration - phase2Duration; // Ensure exact timeline
+
+  const phases: FundingPhase[] = [
     {
-      name: 'Validation',
-      investment: Math.round(total * 0.25),
-      duration: Math.round(timeline * 0.3),
-      objective: 'Prove technical feasibility',
-      milestone: 'Working prototype / validated concept',
-      decisionGate: 'Technical validation complete, proceed to development?',
+      name: 'Phase 1: Validate',
+      investment: phase1Investment,
+      duration: phase1Duration,
+      percentage: 25,
+      objective: 'Prove technical feasibility and validate core assumptions',
+      keyMilestone: 'Working prototype demonstrating core functionality',
+      decisionGate: 'Technical validation complete. Proceed to full development?',
     },
     {
-      name: 'Development',
-      investment: Math.round(total * 0.50),
-      duration: Math.round(timeline * 0.45),
-      objective: 'Build market-ready solution',
-      milestone: 'Pilot customers / beta testing complete',
-      decisionGate: 'Product-market fit validated, proceed to scale?',
+      name: 'Phase 2: Build',
+      investment: phase2Investment,
+      duration: phase2Duration,
+      percentage: 50,
+      objective: 'Develop market-ready product and establish initial traction',
+      keyMilestone: 'Beta testing complete with pilot customers',
+      decisionGate: 'Product-market fit validated. Proceed to scaling?',
     },
     {
-      name: 'Scaling',
-      investment: Math.round(total * 0.25),
-      duration: Math.round(timeline * 0.25),
-      objective: 'Achieve commercial traction',
-      milestone: 'Revenue threshold / user growth targets',
-      decisionGate: 'Unit economics positive, continue scaling?',
+      name: 'Phase 3: Scale',
+      investment: phase3Investment,
+      duration: phase3Duration,
+      percentage: 25,
+      objective: 'Achieve commercial scale and sustainable growth',
+      keyMilestone: 'Revenue targets met with positive unit economics',
+      decisionGate: 'Business model proven. Continue growth investment?',
     },
   ];
+
+  return {
+    phases,
+    totalInvestment: total,
+    totalDuration: timeline,
+  };
 }
 
 export function formatCurrency(amount: number): string {
   if (amount >= 1000000) {
-    return `$${(amount / 1000000).toFixed(1)}M`;
+    return `$${(amount / 1000000).toFixed(2)}M`;
   }
-  return `$${(amount / 1000).toFixed(0)}K`;
+  if (amount >= 1000) {
+    return `$${(amount / 1000).toFixed(0)}K`;
+  }
+  return `$${amount.toFixed(0)}`;
 }

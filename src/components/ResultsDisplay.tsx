@@ -25,15 +25,22 @@ function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecom
 
       <div className="mb-6">
         <div className="text-sm text-gray-600 mb-1">Total Investment</div>
-        <div className="text-4xl font-bold text-primary">
-          {formatCurrency(scenario.costs.total)}
+        <div className="text-4xl font-bold text-blue-600">
+          {formatCurrency(scenario.total)}
         </div>
       </div>
 
       <div className="mb-6">
-        <div className="text-sm text-gray-600 mb-1">Timeline</div>
+        <div className="text-sm text-gray-600 mb-1">Timeline to Market Ready</div>
         <div className="text-2xl font-bold text-gray-900">
           {scenario.timeline} months
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <div className="text-sm text-gray-600 mb-1">Break-even Timeline</div>
+        <div className="text-xl font-bold text-gray-700">
+          {scenario.breakEven} months
         </div>
       </div>
 
@@ -55,16 +62,36 @@ function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecom
       {isExpanded && (
         <div className="mt-4 space-y-3 pl-4">
           <div className="flex justify-between">
-            <span className="text-gray-600">Development</span>
-            <span className="font-medium">{formatCurrency(scenario.costs.development)}</span>
+            <span className="text-gray-600">Development Costs</span>
+            <span className="font-medium">{formatCurrency(scenario.breakdown.development)}</span>
+          </div>
+          <div className="flex justify-between pl-4">
+            <span className="text-gray-500 text-sm">└ Technical Infrastructure</span>
+            <span className="font-medium text-sm">{formatCurrency(scenario.breakdown.technical)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Go-to-Market</span>
-            <span className="font-medium">{formatCurrency(scenario.costs.gtm)}</span>
+            <span className="text-gray-600">Regulatory Costs</span>
+            <span className="font-medium">{formatCurrency(scenario.breakdown.regulatory)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Risk Contingency</span>
-            <span className="font-medium">{formatCurrency(scenario.costs.risk)}</span>
+            <span className="text-gray-600">Go-to-Market (3 years)</span>
+            <span className="font-medium">{formatCurrency(scenario.breakdown.gtm)}</span>
+          </div>
+          <div className="flex justify-between pl-4">
+            <span className="text-gray-500 text-sm">└ Year 1</span>
+            <span className="font-medium text-sm">{formatCurrency(scenario.breakdown.gtmYear1)}</span>
+          </div>
+          <div className="flex justify-between pl-4">
+            <span className="text-gray-500 text-sm">└ Years 2-3</span>
+            <span className="font-medium text-sm">{formatCurrency(scenario.breakdown.gtmYears23)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Risk Buffer (40%)</span>
+            <span className="font-medium">{formatCurrency(scenario.breakdown.riskBuffer)}</span>
+          </div>
+          <div className="flex justify-between border-t border-gray-300 pt-3 mt-3">
+            <span className="text-gray-900 font-semibold">Total Investment</span>
+            <span className="font-bold">{formatCurrency(scenario.breakdown.total)}</span>
           </div>
         </div>
       )}
@@ -73,20 +100,22 @@ function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecom
 }
 
 export default function ResultsDisplay({ results, onViewStagedFunding, onExport }: ResultsDisplayProps) {
+  const [optimistic, realistic, conservative] = results.scenarios;
+
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Investment Requirements</h1>
         <p className="text-xl text-gray-600">
-          Based on your inputs, here are three scenario projections
+          Based on your inputs across {results.inputs.technologyType} and {results.inputs.targetMarket}
         </p>
       </div>
 
       {/* Three scenario cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <ScenarioCard scenario={results.optimistic} isRecommended={false} />
-        <ScenarioCard scenario={results.realistic} isRecommended={true} />
-        <ScenarioCard scenario={results.conservative} isRecommended={false} />
+        <ScenarioCard scenario={optimistic} isRecommended={false} />
+        <ScenarioCard scenario={realistic} isRecommended={true} />
+        <ScenarioCard scenario={conservative} isRecommended={false} />
       </div>
 
       {/* Confidence interval */}
@@ -106,13 +135,13 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
             />
           </svg>
           <div>
-            <h3 className="font-medium text-gray-900 mb-1">Confidence Range</h3>
+            <h3 className="font-medium text-gray-900 mb-1">Confidence Interval</h3>
             <p className="text-gray-700">
               The realistic scenario has a confidence range of{' '}
               <span className="font-bold">
-                {formatCurrency(results.confidenceRange.low)} - {formatCurrency(results.confidenceRange.high)}
+                {formatCurrency(results.confidenceInterval.min)} - {formatCurrency(results.confidenceInterval.max)}
               </span>
-              {' '}(±15%)
+              {' '}(±20%)
             </p>
           </div>
         </div>
@@ -122,7 +151,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <button
           onClick={onViewStagedFunding}
-          className="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary-light font-medium transition-colors"
+          className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
         >
           View Staged Funding
         </button>
