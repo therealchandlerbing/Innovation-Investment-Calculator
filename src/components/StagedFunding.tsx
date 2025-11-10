@@ -1,84 +1,79 @@
-import type { StagedFunding as StagedFundingType } from '../types';
-import { formatCurrency } from '../utils/calculator';
+import type { StagedFundingPhase } from '../types/calculator';
+import { formatCurrency } from '../utils/calculations';
 
 interface StagedFundingProps {
-  stagedFunding: StagedFundingType;
+  phases: StagedFundingPhase[];
   onBack: () => void;
-  onExportReport: () => void;
 }
 
-function PhaseCard({ phase, index }: { phase: StagedFundingType['phases'][0]; index: number }) {
+function PhaseCard({ phase, index }: { phase: StagedFundingPhase; index: number }) {
   const colors = [
-    { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', dot: 'bg-blue-600' },
-    { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', dot: 'bg-green-600' },
-    { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', dot: 'bg-purple-600' },
+    { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-600' },
+    { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-600' },
+    { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', badge: 'bg-purple-600' },
   ];
 
   const color = colors[index] || colors[0];
 
   return (
-    <div className={`card ${color.bg} ${color.border} border-2 relative`}>
-      {/* Phase Number Badge */}
-      <div className={`absolute -top-3 -left-3 w-8 h-8 ${color.dot} rounded-full flex items-center justify-center text-white font-bold`}>
+    <div className={`${color.bg} ${color.border} border-2 rounded-lg p-6 relative`}>
+      {/* Phase number badge */}
+      <div className={`absolute -top-3 -left-3 w-8 h-8 ${color.badge} rounded-full flex items-center justify-center text-white font-bold text-sm`}>
         {index + 1}
       </div>
 
       <h3 className={`text-xl font-bold ${color.text} mb-4`}>{phase.name}</h3>
 
-      {/* Investment Amount */}
-      <div className="mb-4 pb-4 border-b border-gray-200">
-        <div className="text-sm text-gray-600 mb-1">Investment Required</div>
-        <div className="text-3xl font-bold text-gray-900">
-          {formatCurrency(phase.investment)}
+      <div className="space-y-4">
+        <div>
+          <div className="text-sm text-gray-600 mb-1">Investment</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {formatCurrency(phase.investment)}
+          </div>
         </div>
-      </div>
 
-      {/* Duration */}
-      <div className="mb-4 pb-4 border-b border-gray-200">
-        <div className="text-sm text-gray-600 mb-1">Duration</div>
-        <div className="text-xl font-bold text-gray-900">
-          {phase.duration} months
+        <div>
+          <div className="text-sm text-gray-600 mb-1">Duration</div>
+          <div className="text-xl font-bold text-gray-900">
+            {phase.duration} months
+          </div>
         </div>
-      </div>
 
-      {/* Objective */}
-      <div className="mb-4">
-        <div className="text-sm font-medium text-gray-700 mb-2">Objective</div>
-        <p className="text-gray-600">{phase.objective}</p>
-      </div>
-
-      {/* Key Milestone */}
-      <div className="mb-4">
-        <div className="text-sm font-medium text-gray-700 mb-2">Key Milestone</div>
-        <p className="text-gray-600">{phase.keyMilestone}</p>
-      </div>
-
-      {/* Decision Gate */}
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <div className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-            />
-          </svg>
-          Decision Gate
+        <div>
+          <div className="text-sm font-medium text-gray-700 mb-1">Objective</div>
+          <p className="text-sm text-gray-600">{phase.objective}</p>
         </div>
-        <p className="text-sm text-gray-600">{phase.decisionGate}</p>
+
+        <div>
+          <div className="text-sm font-medium text-gray-700 mb-1">Key Milestone</div>
+          <p className="text-sm text-gray-600">{phase.milestone}</p>
+        </div>
+
+        <div className="bg-white rounded-lg p-3 border border-gray-200">
+          <div className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+              />
+            </svg>
+            Decision Gate
+          </div>
+          <p className="text-sm text-gray-600">{phase.decisionGate}</p>
+        </div>
       </div>
     </div>
   );
 }
 
-export default function StagedFunding({
-  stagedFunding,
-  onBack,
-  onExportReport,
-}: StagedFundingProps) {
+export default function StagedFunding({ phases, onBack }: StagedFundingProps) {
+  const totalInvestment = phases.reduce((sum, phase) => sum + phase.investment, 0);
+  const totalDuration = phases.reduce((sum, phase) => sum + phase.duration, 0);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto p-6">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Staged Funding Model</h1>
         <p className="text-xl text-gray-600">
@@ -86,47 +81,47 @@ export default function StagedFunding({
         </p>
       </div>
 
-      {/* Summary Stats */}
+      {/* Summary stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        <div className="card bg-gradient-to-r from-primary-50 to-blue-50">
+        <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6">
           <div className="text-sm text-gray-600 mb-2">Total Investment</div>
-          <div className="text-4xl font-bold text-primary-600">
-            {formatCurrency(stagedFunding.totalInvestment)}
+          <div className="text-4xl font-bold text-blue-700">
+            {formatCurrency(totalInvestment)}
           </div>
           <div className="text-sm text-gray-600 mt-2">Across all phases</div>
         </div>
 
-        <div className="card bg-gradient-to-r from-green-50 to-emerald-50">
+        <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-6">
           <div className="text-sm text-gray-600 mb-2">Total Timeline</div>
-          <div className="text-4xl font-bold text-green-600">
-            {stagedFunding.totalDuration} months
+          <div className="text-4xl font-bold text-green-700">
+            {totalDuration} months
           </div>
-          <div className="text-sm text-gray-600 mt-2">From start to break-even</div>
+          <div className="text-sm text-gray-600 mt-2">From start to completion</div>
         </div>
       </div>
 
-      {/* Timeline Visualization */}
+      {/* Timeline visualization */}
       <div className="mb-12">
         <div className="relative">
-          {/* Timeline Line */}
+          {/* Timeline line (desktop only) */}
           <div className="absolute left-0 right-0 top-8 h-1 bg-gray-200 hidden lg:block" />
 
-          {/* Phase Cards */}
+          {/* Phase cards */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {stagedFunding.phases.map((phase, index) => (
+            {phases.map((phase, index) => (
               <PhaseCard key={phase.name} phase={phase} index={index} />
             ))}
           </div>
         </div>
       </div>
 
-      {/* De-risking Strategy Info */}
-      <div className="card bg-gray-50 mb-8">
+      {/* Benefits info */}
+      <div className="bg-gray-50 rounded-lg p-6 mb-8">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Why Stage Your Investment?</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span className="font-medium text-gray-900">Reduce Risk</span>
@@ -138,7 +133,7 @@ export default function StagedFunding({
 
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
               <span className="font-medium text-gray-900">Track Progress</span>
@@ -150,7 +145,7 @@ export default function StagedFunding({
 
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span className="font-medium text-gray-900">Optimize Capital</span>
@@ -162,13 +157,13 @@ export default function StagedFunding({
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-        <button onClick={onBack} className="btn-secondary">
+      {/* Back button */}
+      <div className="text-center">
+        <button
+          onClick={onBack}
+          className="px-8 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-medium transition-colors"
+        >
           ← Back to Results
-        </button>
-        <button onClick={onExportReport} className="btn-primary">
-          Export PDF Report
         </button>
       </div>
     </div>

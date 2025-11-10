@@ -1,260 +1,250 @@
-import { useForm } from 'react-hook-form';
-import type { UserInputs, CurrentStage, TeamStatus, RegulatoryEnvironment } from '../types';
-import { GEOGRAPHIC_LOCATIONS, TECHNOLOGY_GROUPS, MARKET_GROUPS } from '../config/coefficients';
+import { useState } from 'react';
+import type { UserInputs, TechnologyType, Stage, Market, TeamStatus, RegulatoryEnv } from '../types/calculator';
+import { COEFFICIENTS } from '../utils/coefficients';
 
 interface InputFormProps {
-  onSubmit: (data: UserInputs) => void;
-  isLoading: boolean;
+  onSubmit: (inputs: UserInputs) => void;
+  onLoadExample?: (example: UserInputs) => void;
 }
 
-const currentStages: CurrentStage[] = [
-  'Concept (TRL 1-3)',
-  'Prototype (TRL 4-6)',
-  'Pilot (TRL 7-8)',
-  'Market Ready (TRL 9)',
-];
+export default function InputForm({ onSubmit, onLoadExample }: InputFormProps) {
+  const [formData, setFormData] = useState<Partial<UserInputs>>({});
 
-const teamStatuses: TeamStatus[] = ['No team yet', 'Partial team', 'Full team assembled'];
-const regulatoryEnvironments: RegulatoryEnvironment[] = ['None', 'Moderate', 'Heavy (FDA/EPA level)'];
+  const technologyTypes: TechnologyType[] = ['Software', 'Hardware', 'Biotech', 'Clean Energy'];
+  const stages: Stage[] = [
+    'Concept (TRL 1-3)',
+    'Prototype (TRL 4-6)',
+    'Pilot (TRL 7-8)',
+    'Production (TRL 9)',
+  ];
+  const markets: Market[] = ['Enterprise B2B', 'SMB B2B', 'Consumer B2C', 'Government'];
+  const teamStatuses: TeamStatus[] = [
+    'No team yet',
+    'Partial team (1-3 people)',
+    'Full team assembled (4+ people)',
+  ];
+  const regulatoryEnvs: RegulatoryEnv[] = [
+    'None',
+    'Moderate (compliance, certifications)',
+    'Heavy (FDA, EPA, nuclear)',
+  ];
 
-export default function InputForm({ onSubmit, isLoading }: InputFormProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm<UserInputs>();
+  const locations = Object.keys(COEFFICIENTS.geographyModifiers);
 
-  const watchedFields = watch();
-  const totalFields = 6;
-  const filledFields = Object.values(watchedFields).filter(Boolean).length;
-  const progress = (filledFields / totalFields) * 100;
+  const isFormComplete = () => {
+    return (
+      formData.technologyType &&
+      formData.stage &&
+      formData.market &&
+      formData.location &&
+      formData.teamStatus &&
+      formData.regulatory
+    );
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isFormComplete()) {
+      onSubmit(formData as UserInputs);
+    }
+  };
+
+  const handleChange = (field: keyof UserInputs, value: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const examples = [
+    {
+      name: 'Low-Cost Software',
+      data: {
+        technologyType: 'Software' as TechnologyType,
+        stage: 'Prototype (TRL 4-6)' as Stage,
+        market: 'SMB B2B' as Market,
+        location: 'Remote US',
+        teamStatus: 'Partial team (1-3 people)' as TeamStatus,
+        regulatory: 'None' as RegulatoryEnv,
+      },
+    },
+    {
+      name: 'High-Cost Biotech',
+      data: {
+        technologyType: 'Biotech' as TechnologyType,
+        stage: 'Pilot (TRL 7-8)' as Stage,
+        market: 'Enterprise B2B' as Market,
+        location: 'San Francisco Bay Area',
+        teamStatus: 'No team yet' as TeamStatus,
+        regulatory: 'Heavy (FDA, EPA, nuclear)' as RegulatoryEnv,
+      },
+    },
+    {
+      name: 'Mid-Range Hardware',
+      data: {
+        technologyType: 'Hardware' as TechnologyType,
+        stage: 'Production (TRL 9)' as Stage,
+        market: 'Consumer B2C' as Market,
+        location: 'Austin',
+        teamStatus: 'Full team assembled (4+ people)' as TeamStatus,
+        regulatory: 'Moderate (compliance, certifications)' as RegulatoryEnv,
+      },
+    },
+  ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Innovation Implementation Calculator™
-        </h1>
-        <p className="text-xl text-gray-600">
-          Calculate your true implementation requirements
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Innovation Investment Calculator</h1>
+        <p className="text-gray-600 mb-8">
+          Get an evidence-based estimate of your innovation investment requirements
         </p>
-        <p className="text-sm text-gray-500 mt-2">
-          360 Social Impact Studios
-        </p>
-      </div>
 
-      {/* Progress Indicator */}
-      <div className="mb-8">
-        <div className="flex justify-between text-sm text-gray-600 mb-2">
-          <span>Progress</span>
-          <span>{filledFields} of {totalFields} fields completed</span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="card">
-          {/* Technology Type */}
-          <div className="mb-6">
-            <label className="label">
-              1. Technology Type
-              <span className="text-red-500 ml-1">*</span>
-            </label>
-            <select
-              {...register('technologyType', { required: 'Technology type is required' })}
-              className="input-field"
-            >
-              <option value="">Select technology type...</option>
-              {Object.entries(TECHNOLOGY_GROUPS).map(([group, types]) => (
-                <optgroup key={group} label={group}>
-                  {types.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-            {errors.technologyType && (
-              <p className="text-red-500 text-sm mt-2">{errors.technologyType.message}</p>
-            )}
-          </div>
-
-          {/* Current Stage */}
-          <div className="mb-6">
-            <label className="label">
-              2. Current Stage
-              <span className="text-red-500 ml-1">*</span>
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {currentStages.map((stage) => (
-                <label
-                  key={stage}
-                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                    watchedFields.currentStage === stage
-                      ? 'border-primary-600 bg-primary-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
+        {onLoadExample && (
+          <div className="mb-8 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-3">Quick Start Examples:</p>
+            <div className="flex flex-wrap gap-2">
+              {examples.map((example) => (
+                <button
+                  key={example.name}
+                  onClick={() => {
+                    setFormData(example.data);
+                    onLoadExample(example.data);
+                  }}
+                  className="px-4 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
                 >
-                  <input
-                    type="radio"
-                    value={stage}
-                    {...register('currentStage', { required: 'Current stage is required' })}
-                    className="mr-3"
-                  />
-                  <span className="font-medium">{stage}</span>
-                </label>
+                  {example.name}
+                </button>
               ))}
             </div>
-            {errors.currentStage && (
-              <p className="text-red-500 text-sm mt-2">{errors.currentStage.message}</p>
-            )}
           </div>
+        )}
 
-          {/* Target Market */}
-          <div className="mb-6">
-            <label className="label">
-              3. Target Market
-              <span className="text-red-500 ml-1">*</span>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Technology Type *
             </label>
             <select
-              {...register('targetMarket', { required: 'Target market is required' })}
-              className="input-field"
+              value={formData.technologyType || ''}
+              onChange={(e) => handleChange('technologyType', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
             >
-              <option value="">Select target market...</option>
-              {Object.entries(MARKET_GROUPS).map(([group, markets]) => (
-                <optgroup key={group} label={group}>
-                  {markets.map((market) => (
-                    <option key={market} value={market}>
-                      {market}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-            {errors.targetMarket && (
-              <p className="text-red-500 text-sm mt-2">{errors.targetMarket.message}</p>
-            )}
-          </div>
-
-          {/* Geographic Location */}
-          <div className="mb-6">
-            <label className="label">
-              4. Geographic Location
-              <span className="text-red-500 ml-1">*</span>
-            </label>
-            <select
-              {...register('geographicLocation', { required: 'Geographic location is required' })}
-              className="input-field"
-            >
-              <option value="">Select location...</option>
-              {GEOGRAPHIC_LOCATIONS.map((location) => (
-                <option key={location.name} value={location.name}>
-                  {location.name} (Index: {location.index})
+              <option value="">Select technology type...</option>
+              {technologyTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
                 </option>
               ))}
             </select>
-            {errors.geographicLocation && (
-              <p className="text-red-500 text-sm mt-2">{errors.geographicLocation.message}</p>
-            )}
           </div>
 
-          {/* Team Status */}
-          <div className="mb-6">
-            <label className="label">
-              5. Team Status
-              <span className="text-red-500 ml-1">*</span>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Current Development Stage *
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <select
+              value={formData.stage || ''}
+              onChange={(e) => handleChange('stage', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            >
+              <option value="">Select development stage...</option>
+              {stages.map((stage) => (
+                <option key={stage} value={stage}>
+                  {stage}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Target Market *
+            </label>
+            <select
+              value={formData.market || ''}
+              onChange={(e) => handleChange('market', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            >
+              <option value="">Select target market...</option>
+              {markets.map((market) => (
+                <option key={market} value={market}>
+                  {market}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Geographic Location *
+            </label>
+            <select
+              value={formData.location || ''}
+              onChange={(e) => handleChange('location', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            >
+              <option value="">Select location...</option>
+              {locations.map((location) => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Team Status *
+            </label>
+            <select
+              value={formData.teamStatus || ''}
+              onChange={(e) => handleChange('teamStatus', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            >
+              <option value="">Select team status...</option>
               {teamStatuses.map((status) => (
-                <label
-                  key={status}
-                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                    watchedFields.teamStatus === status
-                      ? 'border-primary-600 bg-primary-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    value={status}
-                    {...register('teamStatus', { required: 'Team status is required' })}
-                    className="mr-3"
-                  />
-                  <span className="font-medium text-sm">{status}</span>
-                </label>
+                <option key={status} value={status}>
+                  {status}
+                </option>
               ))}
-            </div>
-            {errors.teamStatus && (
-              <p className="text-red-500 text-sm mt-2">{errors.teamStatus.message}</p>
-            )}
+            </select>
           </div>
 
-          {/* Regulatory Environment */}
-          <div className="mb-6">
-            <label className="label">
-              6. Regulatory Environment
-              <span className="text-red-500 ml-1">*</span>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Regulatory Environment *
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {regulatoryEnvironments.map((env) => (
-                <label
-                  key={env}
-                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                    watchedFields.regulatoryEnvironment === env
-                      ? 'border-primary-600 bg-primary-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    value={env}
-                    {...register('regulatoryEnvironment', { required: 'Regulatory environment is required' })}
-                    className="mr-3"
-                  />
-                  <span className="font-medium text-sm">{env}</span>
-                </label>
+            <select
+              value={formData.regulatory || ''}
+              onChange={(e) => handleChange('regulatory', e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            >
+              <option value="">Select regulatory environment...</option>
+              {regulatoryEnvs.map((env) => (
+                <option key={env} value={env}>
+                  {env}
+                </option>
               ))}
-            </div>
-            {errors.regulatoryEnvironment && (
-              <p className="text-red-500 text-sm mt-2">{errors.regulatoryEnvironment.message}</p>
-            )}
+            </select>
           </div>
-        </div>
 
-        <div className="flex justify-center">
           <button
             type="submit"
-            disabled={isLoading}
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed px-8 py-4 text-lg"
+            disabled={!isFormComplete()}
+            className={`w-full py-3 px-6 rounded-md text-white font-medium transition-colors ${
+              isFormComplete()
+                ? 'bg-primary hover:bg-primary-light cursor-pointer'
+                : 'bg-gray-300 cursor-not-allowed'
+            }`}
           >
-            {isLoading ? 'Calculating...' : 'Calculate Investment Requirements'}
+            Calculate Investment
           </button>
-        </div>
-      </form>
-
-      <footer className="mt-16 pt-8 border-t border-gray-200">
-        <div className="text-center text-sm text-gray-600">
-          <a href="#methodology" className="hover:text-primary-600 mr-4">
-            Methodology
-          </a>
-          <a href="#data-sources" className="hover:text-primary-600 mr-4">
-            Data Sources
-          </a>
-          <a href="#version-log" className="hover:text-primary-600">
-            Version Log
-          </a>
-        </div>
-        <div className="text-center text-xs text-gray-500 mt-4">
-          Innovation Implementation Calculator™ v1.0
-        </div>
-      </footer>
+        </form>
+      </div>
     </div>
   );
 }
