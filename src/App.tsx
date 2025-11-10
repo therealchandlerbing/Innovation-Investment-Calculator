@@ -1,57 +1,60 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import InputForm from './components/InputForm';
 import ResultsDisplay from './components/ResultsDisplay';
 import StagedFunding from './components/StagedFunding';
-import type { UserInputs, CalculationResults, StagedFunding as StagedFundingType } from './types';
-import { calculateInvestment, calculateStagedFunding } from './utils/calculator';
-import { generatePDFReport } from './utils/pdfGenerator';
+import ExportOptions from './components/ExportOptions';
+import type { UserInputs, CalculationResults } from './types/calculator';
+import { calculateInvestment, calculateStagedFunding } from './utils/calculations';
+import { loadCalculation } from './utils/storage';
+import { generatePDF } from './utils/pdfGenerator';
 
-type Screen = 'input' | 'results' | 'staged-funding';
+// Screen management
+type Screen = 'input' | 'results' | 'staged' | 'export';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('input');
+  const [inputs, setInputs] = useState<UserInputs | null>(null);
   const [results, setResults] = useState<CalculationResults | null>(null);
-  const [stagedFunding, setStagedFunding] = useState<StagedFundingType | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleCalculate = async (inputs: UserInputs) => {
-    setIsLoading(true);
+  // Check for ?load= parameter on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const loadId = params.get('load');
+    if (loadId) {
+      const saved = loadCalculation(loadId);
+      if (saved) {
+        setInputs(saved.inputs);
+        setResults(saved.results);
+        setCurrentScreen('results');
+      }
+    }
+  }, []);
 
-    // Simulate calculation delay for credibility (minimum 500ms)
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const calculationResults = calculateInvestment(inputs);
-    const realisticScenario = calculationResults.scenarios.find(s => s.name === 'Realistic')!;
-    const fundingPlan = calculateStagedFunding(realisticScenario);
-
-    setResults(calculationResults);
-    setStagedFunding(fundingPlan);
-    setIsLoading(false);
+  // Handle form submission
+  const handleCalculate = (formInputs: UserInputs) => {
+    setInputs(formInputs);
+    const calculated = calculateInvestment(formInputs);
+    setResults(calculated);
     setCurrentScreen('results');
-
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleViewStagedFunding = () => {
-    setCurrentScreen('staged-funding');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setCurrentScreen('staged');
   };
 
-  const handleExportReport = () => {
-    if (results && stagedFunding) {
-      generatePDFReport(results, stagedFunding);
+  const handleExport = () => {
+    if (inputs && results) {
+      const stagedFunding = calculateStagedFunding(results.realistic);
+      generatePDF(inputs, results, stagedFunding);
     }
   };
 
   const handleBackToInput = () => {
     setCurrentScreen('input');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBackToResults = () => {
     setCurrentScreen('results');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -61,7 +64,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
@@ -77,8 +80,8 @@ function App() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Investment Calculator</h1>
-                <p className="text-sm text-gray-600">Innovation Implementation Costs</p>
+                <h1 className="text-xl font-bold text-gray-900">Innovation Investment Calculator</h1>
+                <p className="text-sm text-gray-600">Evidence-based investment estimates</p>
               </div>
             </div>
 
@@ -100,24 +103,26 @@ function App() {
       {/* Main Content */}
       <main>
         {currentScreen === 'input' && (
-          <InputForm onSubmit={handleCalculate} isLoading={isLoading} />
+          <InputForm onSubmit={handleCalculate} />
         )}
 
         {currentScreen === 'results' && results && (
           <ResultsDisplay
             results={results}
             onViewStagedFunding={handleViewStagedFunding}
-            onExportReport={handleExportReport}
-            onBack={handleBackToInput}
+            onExport={handleExport}
           />
         )}
 
-        {currentScreen === 'staged-funding' && stagedFunding && (
+        {currentScreen === 'staged' && results && (
           <StagedFunding
-            stagedFunding={stagedFunding}
+            phases={calculateStagedFunding(results.realistic)}
             onBack={handleBackToResults}
-            onExportReport={handleExportReport}
           />
+        )}
+
+        {currentScreen === 'export' && inputs && results && (
+          <ExportOptions inputs={inputs} results={results} />
         )}
       </main>
 
@@ -128,8 +133,7 @@ function App() {
             <div>
               <h3 className="font-medium text-gray-900 mb-3">About This Calculator</h3>
               <p className="text-sm text-gray-600">
-                Professional investment estimation tool based on industry research and real-world
-                data.
+                Professional investment estimation tool based on industry research and real-world data.
               </p>
             </div>
 
@@ -137,18 +141,13 @@ function App() {
               <h3 className="font-medium text-gray-900 mb-3">Resources</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#methodology" className="text-gray-600 hover:text-primary-600">
+                  <a href="/methodology.pdf" className="text-gray-600 hover:text-primary">
                     Methodology
                   </a>
                 </li>
                 <li>
-                  <a href="#data-sources" className="text-gray-600 hover:text-primary-600">
+                  <a href="#data-sources" className="text-gray-600 hover:text-primary">
                     Data Sources
-                  </a>
-                </li>
-                <li>
-                  <a href="#version-log" className="text-gray-600 hover:text-primary-600">
-                    Version Log
                   </a>
                 </li>
               </ul>
@@ -157,14 +156,13 @@ function App() {
             <div>
               <h3 className="font-medium text-gray-900 mb-3">Privacy</h3>
               <p className="text-sm text-gray-600">
-                Your calculation data is processed locally. No information is stored or transmitted
-                without your consent.
+                Your calculation data is processed locally. No information is stored or transmitted without your consent.
               </p>
             </div>
           </div>
 
           <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
-            <p>© {new Date().getFullYear()} Investment Calculator. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Innovation Investment Calculator</p>
           </div>
         </div>
       </footer>
