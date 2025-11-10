@@ -3,7 +3,6 @@ import {
   REGULATORY_COSTS,
   GTM_COSTS,
   STAGE_TIMELINES,
-  GEOGRAPHIC_LOCATIONS,
 } from './coefficients';
 import type { UserInputs, CalculationResults, Scenario, CostBreakdown, StagedFunding, FundingPhase } from '../types/calculator';
 
@@ -15,25 +14,10 @@ export function calculateInvestment(inputs: UserInputs): CalculationResults {
   const gtmYears23Base = GTM_COSTS[inputs.targetMarket].years23;
   const timeline = STAGE_TIMELINES[inputs.currentStage];
 
-  // Geographic cost modifier (defaults to 1.0)
-  const geoLocation = GEOGRAPHIC_LOCATIONS.find(loc => loc.name === inputs.geographicLocation);
-  const geoModifier = geoLocation ? geoLocation.index : 1.0;
-
-  // Team status multiplier (defaults to 1.0 for full team)
-  const teamMultipliers = {
-    'No team yet': 1.25,
-    'Partial team': 1.10,
-    'Full team assembled': 1.00,
-  };
-  const teamMultiplier = teamMultipliers[inputs.teamStatus];
-
-  // Regulatory environment multiplier (defaults to 1.0 for moderate)
-  const regulatoryMultipliers = {
-    'None': 0.5,
-    'Moderate': 1.0,
-    'Heavy (FDA/EPA level)': 1.8,
-  };
-  const regulatoryMultiplier = regulatoryMultipliers[inputs.regulatoryEnvironment];
+  // NOTE: The reference document examples do NOT apply additional modifiers.
+  // Base costs already account for all standard factors (location, team, complexity).
+  // Geographic location, team status, and regulatory environment are collected
+  // for context but do NOT modify the calculation to match reference examples.
 
   // Scenario configurations per reference document
   const scenarioConfigs = {
@@ -59,17 +43,17 @@ export function calculateInvestment(inputs: UserInputs): CalculationResults {
 
   // Calculate scenarios
   const scenarios: Scenario[] = Object.entries(scenarioConfigs).map(([name, config]) => {
-    // Development costs with scenario, geographic, and team multipliers
-    const development = baseDevelopmentCost * config.devMultiplier * geoModifier * teamMultiplier;
+    // Development costs - ONLY scenario multiplier per reference
+    const development = baseDevelopmentCost * config.devMultiplier;
 
-    // Regulatory costs (with environment multiplier only, not scenario multiplier)
-    const regulatory = baseRegulatoryCost * regulatoryMultiplier;
+    // Regulatory costs - NO multipliers per reference
+    const regulatory = baseRegulatoryCost;
 
-    // GTM Year 1 only (with scenario and geographic multipliers)
-    const gtmYear1 = gtmYear1Base * config.gtmMultiplier * geoModifier;
+    // GTM Year 1 - ONLY scenario multiplier per reference
+    const gtmYear1 = gtmYear1Base * config.gtmMultiplier;
 
     // GTM Years 2-3 for reference (not included in total investment)
-    const gtmYears23 = gtmYears23Base * config.gtmMultiplier * geoModifier;
+    const gtmYears23 = gtmYears23Base * config.gtmMultiplier;
 
     // Technical costs (subset of development, for breakdown display)
     const technical = development * 0.15;
