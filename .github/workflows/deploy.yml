@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, claude/follow-exact-prompt-011CUztytHd6mDZT4kgcCCxL ]
 
 permissions:
   contents: read
