@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { CalculationResults, Scenario } from '../types/calculator';
 import { formatCurrency } from '../utils/calculations';
 
@@ -130,49 +130,142 @@ function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecom
 
 export default function ResultsDisplay({ results, onViewStagedFunding, onExport }: ResultsDisplayProps) {
   const [optimistic, realistic, conservative] = results.scenarios;
+  const scenariosRef = useRef<HTMLDivElement>(null);
+  const fundingRef = useRef<HTMLDivElement>(null);
+
+  const scrollToScenarios = () => {
+    scenariosRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const scrollToFunding = () => {
+    fundingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Investment Requirements</h1>
-        <p className="text-xl text-gray-600">
-          Based on your inputs across {results.inputs.technologyType} and {results.inputs.targetMarket}
-        </p>
-      </div>
+      {/* Enhanced Executive Summary Hero */}
+      <section className="bg-white rounded-xl shadow-xl overflow-hidden mb-12">
+        {/* Hero Section with Gradient Background */}
+        <div className="relative bg-gradient-to-br from-primary via-primary-light to-slate-700 p-8 lg:p-12 overflow-hidden">
+          {/* Decorative Background Element */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="relative z-10 max-w-4xl">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full mb-6">
+              <span className="text-xl">📊</span>
+              <span className="text-sm font-semibold text-white uppercase tracking-wider">Investment Overview</span>
+            </div>
+
+            {/* Title */}
+            <h1 className="text-3xl lg:text-5xl font-extrabold text-white mb-3 tracking-tight leading-tight">
+              Your Innovation Investment Estimate
+            </h1>
+            <p className="text-lg lg:text-xl text-white/80 mb-10 leading-relaxed">
+              Based on realistic market conditions and proven benchmarks for {results.inputs.technologyType} in {results.inputs.targetMarket}
+            </p>
+
+            {/* Primary Investment Display */}
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 lg:p-8">
+              <div className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-3">
+                Recommended Total Investment
+              </div>
+              <div className="font-mono text-5xl lg:text-6xl font-extrabold text-white mb-4 tracking-tight">
+                {formatCurrency(realistic.total)}
+              </div>
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="inline-flex items-center px-3 py-1.5 bg-success/20 border border-success/30 rounded-lg text-sm font-semibold text-green-200">
+                  ±15% confidence range
+                </span>
+                <span className="font-mono text-lg font-semibold text-white/90">
+                  {formatCurrency(results.confidenceInterval.min)} - {formatCurrency(results.confidenceInterval.max)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Metrics Cards Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 border-t border-gray-200 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+          {/* Timeline Metric */}
+          <div className="flex items-center gap-4 lg:gap-6 p-6 lg:p-8 hover:bg-gray-50 transition-colors">
+            <div className="text-4xl lg:text-5xl opacity-80 flex-shrink-0">⏱️</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                Development Timeline
+              </div>
+              <div className="font-mono text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
+                {realistic.timeline} mo
+              </div>
+              <div className="text-sm text-gray-600">
+                From start to market-ready
+              </div>
+            </div>
+          </div>
+
+          {/* Break-Even Metric */}
+          <div className="flex items-center gap-4 lg:gap-6 p-6 lg:p-8 hover:bg-gray-50 transition-colors">
+            <div className="text-4xl lg:text-5xl opacity-80 flex-shrink-0">📈</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                Break-Even Point
+              </div>
+              <div className="font-mono text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
+                Month {realistic.breakEven}
+              </div>
+              <div className="text-sm text-gray-600">
+                Expected profitability milestone
+              </div>
+            </div>
+          </div>
+
+          {/* Scenario Range Metric */}
+          <div className="flex items-center gap-4 lg:gap-6 p-6 lg:p-8 hover:bg-gray-50 transition-colors">
+            <div className="text-4xl lg:text-5xl opacity-80 flex-shrink-0">📊</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                Best to Worst Case
+              </div>
+              <div className="font-mono text-xl lg:text-2xl xl:text-3xl font-bold text-gray-900 mb-1 break-words">
+                {formatCurrency(optimistic.total)}-{formatCurrency(conservative.total)}
+              </div>
+              <div className="text-sm text-gray-600">
+                Full scenario spread
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 p-8 bg-gray-50 border-t border-gray-200">
+          <button
+            onClick={scrollToScenarios}
+            className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-accent text-white rounded-lg hover:bg-accent/90 hover:shadow-lg font-semibold transition-all duration-200 hover:-translate-y-0.5 group"
+          >
+            <span>View Detailed Scenarios</span>
+            <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </button>
+          <button
+            onClick={scrollToFunding}
+            className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-white text-gray-700 rounded-lg hover:border-accent hover:text-accent hover:shadow-md font-semibold transition-all duration-200 border-2 border-gray-300 group"
+          >
+            <span>See Funding Strategy</span>
+            <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </button>
+        </div>
+      </section>
 
       {/* Three scenario cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <ScenarioCard scenario={optimistic} isRecommended={false} />
-        <ScenarioCard scenario={realistic} isRecommended={true} />
-        <ScenarioCard scenario={conservative} isRecommended={false} />
-      </div>
-
-      {/* Confidence interval */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-        <div className="flex items-start gap-3">
-          <svg
-            className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <div>
-            <h3 className="font-medium text-gray-900 mb-1">Confidence Interval</h3>
-            <p className="text-gray-700">
-              The realistic scenario has a confidence range of{' '}
-              <span className="font-bold">
-                {formatCurrency(results.confidenceInterval.min)} - {formatCurrency(results.confidenceInterval.max)}
-              </span>
-              {' '}(±15%)
-            </p>
-          </div>
+      <div ref={scenariosRef} className="scroll-mt-6 mb-12">
+        <h2 className="text-3xl font-bold text-gray-900 mb-6">Investment Scenarios</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <ScenarioCard scenario={optimistic} isRecommended={false} />
+          <ScenarioCard scenario={realistic} isRecommended={true} />
+          <ScenarioCard scenario={conservative} isRecommended={false} />
         </div>
       </div>
 
@@ -337,7 +430,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
       </div>
 
       {/* Section 5: Funding Strategy */}
-      <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200">
+      <div ref={fundingRef} className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200 scroll-mt-6">
         <div className="flex items-center gap-3 mb-6">
           <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
             Section 5
