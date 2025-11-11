@@ -133,7 +133,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
     yPos += 6;
   });
 
-  addPageFooter(pdf, 2);
+  addPageFooter(pdf);
 
   // ========== PAGE 3: INVESTMENT SCENARIOS ==========
   pdf.addPage();
@@ -142,7 +142,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   yPos = 50;
 
   results.scenarios.forEach((scenario, index) => {
-    const colors = [
+    const colors: Array<{ fill: [number, number, number]; border: [number, number, number]; text: [number, number, number] }> = [
       { fill: [209, 250, 229], border: [16, 185, 129], text: [6, 78, 59] }, // Green - Optimistic
       { fill: [254, 243, 199], border: [245, 158, 11], text: [120, 53, 15] }, // Yellow - Realistic
       { fill: [254, 226, 226], border: [239, 68, 68], text: [127, 29, 29] }, // Red - Conservative
@@ -208,7 +208,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
     yPos += 62;
   });
 
-  addPageFooter(pdf, 3);
+  addPageFooter(pdf);
 
   // ========== PAGE 4: KEY INSIGHTS ==========
   pdf.addPage();
@@ -218,7 +218,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   const insights = generateTakeaways(results);
 
   insights.forEach((insight, index) => {
-    const typeColors: Record<string, { fill: number[]; border: number[] }> = {
+    const typeColors: Record<string, { fill: [number, number, number]; border: [number, number, number] }> = {
       warning: { fill: [254, 243, 199], border: [245, 158, 11] },
       success: { fill: [209, 250, 229], border: [16, 185, 129] },
       tip: { fill: [219, 234, 254], border: [59, 130, 246] },
@@ -247,14 +247,14 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
     yPos += 35;
 
     if (yPos > pageHeight - 40 && index < insights.length - 1) {
-      addPageFooter(pdf, pdf.internal.getNumberOfPages());
+      addPageFooter(pdf);
       pdf.addPage();
       addSectionHeader(pdf, 'Key Insights (continued)', '', margin, 25);
       yPos = 50;
     }
   });
 
-  addPageFooter(pdf, pdf.internal.getNumberOfPages());
+  addPageFooter(pdf);
 
   // ========== PAGE 5: STAGED FUNDING ==========
   pdf.addPage();
@@ -263,7 +263,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   yPos = 50;
 
   stagedFunding.phases.forEach((phase, index) => {
-    const phaseColors = [
+    const phaseColors: Array<{ fill: [number, number, number]; border: [number, number, number] }> = [
       { fill: [219, 234, 254], border: [59, 130, 246] },
       { fill: [209, 250, 229], border: [16, 185, 129] },
       { fill: [233, 213, 255], border: [168, 85, 247] },
@@ -285,7 +285,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
     pdf.setFontSize(9);
     pdf.setFont('helvetica', 'normal');
     pdf.setTextColor(80, 80, 80);
-    pdf.text(phase.duration, margin + 5, yPos + 15);
+    pdf.text(String(phase.duration), margin + 5, yPos + 15);
 
     pdf.setFontSize(16);
     pdf.setFont('helvetica', 'bold');
@@ -308,7 +308,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
     yPos += 50;
   });
 
-  addPageFooter(pdf, pdf.internal.getNumberOfPages());
+  addPageFooter(pdf);
 
   // ========== PAGE 6: EXIT SCENARIOS ==========
   pdf.addPage();
@@ -353,7 +353,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
     yPos += 40;
   });
 
-  addPageFooter(pdf, pdf.internal.getNumberOfPages());
+  addPageFooter(pdf);
 
   // ========== PAGE 7: METHODOLOGY ==========
   pdf.addPage();
@@ -436,10 +436,10 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   yPos += 6;
   pdf.text('✗ Legal or contractual commitments', margin, yPos);
 
-  addPageFooter(pdf, pdf.internal.getNumberOfPages());
+  addPageFooter(pdf);
 
   // Add page numbers to all pages (except cover)
-  const totalPages = pdf.internal.getNumberOfPages();
+  const totalPages = pdf.getNumberOfPages();
   for (let i = 2; i <= totalPages; i++) {
     pdf.setPage(i);
     pdf.setFontSize(8);
@@ -476,7 +476,7 @@ function addSectionHeader(pdf: jsPDF, title: string, subtitle: string, x: number
 }
 
 // Helper function to add page footer
-function addPageFooter(pdf: jsPDF, pageNum: number): void {
+function addPageFooter(pdf: jsPDF): void {
   const pageHeight = pdf.internal.pageSize.getHeight();
   const pageWidth = pdf.internal.pageSize.getWidth();
 
