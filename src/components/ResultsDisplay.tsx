@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react';
 import type { CalculationResults, Scenario } from '../types/calculator';
 import { formatCurrency } from '../utils/calculations';
+import { generateTakeaways } from '../utils/takeaways';
+import TakeawayCallout from './TakeawayCallout';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
@@ -257,6 +259,19 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
             </svg>
           </button>
         </div>
+      </section>
+
+      {/* Key Takeaways */}
+      <section className="mb-12 space-y-4">
+        {generateTakeaways(results).map((takeaway, index) => (
+          <TakeawayCallout
+            key={index}
+            icon={takeaway.icon}
+            title={takeaway.title}
+            text={takeaway.text}
+            delay={index * 200}
+          />
+        ))}
       </section>
 
       {/* Three scenario cards */}
