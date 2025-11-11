@@ -261,17 +261,26 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
         </div>
       </section>
 
-      {/* Key Takeaways */}
-      <section className="mb-12 space-y-4">
-        {generateTakeaways(results).map((takeaway, index) => (
-          <TakeawayCallout
-            key={index}
-            icon={takeaway.icon}
-            title={takeaway.title}
-            text={takeaway.text}
-            delay={index * 200}
-          />
-        ))}
+      {/* Key Insights */}
+      <section className="mb-12">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Key Considerations for Your Scenario</h2>
+          <p className="text-gray-600">
+            Personalized insights based on your specific combination of technology, stage, and market
+          </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {generateTakeaways(results).map((takeaway, index) => (
+            <TakeawayCallout
+              key={index}
+              type={takeaway.type}
+              icon={takeaway.icon}
+              title={takeaway.title}
+              text={takeaway.text}
+              delay={index * 150}
+            />
+          ))}
+        </div>
       </section>
 
       {/* Three scenario cards */}
