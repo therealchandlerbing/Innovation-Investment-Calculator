@@ -2,7 +2,9 @@ import { useState, useRef } from 'react';
 import type { CalculationResults, Scenario } from '../types/calculator';
 import { formatCurrency } from '../utils/calculations';
 import { generateTakeaways } from '../utils/takeaways';
+import { generateDynamicInsight } from '../utils/dynamicInsights';
 import TakeawayCallout from './TakeawayCallout';
+import VisualChart from './VisualChart';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
@@ -291,6 +293,9 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           <ScenarioCard scenario={realistic} isRecommended={true} />
           <ScenarioCard scenario={conservative} isRecommended={false} />
         </div>
+
+        {/* Visual Chart */}
+        <VisualChart scenarios={results.scenarios} />
       </div>
 
       {/* Section 2: Development Requirements */}
@@ -572,6 +577,19 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           </div>
         </div>
       </div>
+
+      {/* Section 7: Dynamic Key Insights */}
+      <section className="bg-gradient-to-br from-primary via-primary-light to-slate-700 rounded-xl p-8 lg:p-10 mb-8 text-white">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center text-2xl">
+            💡
+          </div>
+          <h2 className="text-2xl lg:text-3xl font-bold">Key Insights for Your Investment</h2>
+        </div>
+        <div className="text-base lg:text-lg leading-relaxed text-white/90">
+          {generateDynamicInsight(results)}
+        </div>
+      </section>
 
       {/* Action buttons - Design System styling */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
