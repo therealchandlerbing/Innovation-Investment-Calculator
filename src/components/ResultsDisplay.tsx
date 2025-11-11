@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react';
 import type { CalculationResults, Scenario } from '../types/calculator';
 import { formatCurrency } from '../utils/calculations';
+import { generateTakeaways } from '../utils/takeaways';
+import TakeawayCallout from './TakeawayCallout';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
@@ -256,6 +258,28 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </button>
+        </div>
+      </section>
+
+      {/* Key Insights */}
+      <section className="mb-12">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Key Considerations for Your Scenario</h2>
+          <p className="text-gray-600">
+            Personalized insights based on your specific combination of technology, stage, and market
+          </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {generateTakeaways(results).map((takeaway, index) => (
+            <TakeawayCallout
+              key={index}
+              type={takeaway.type}
+              icon={takeaway.icon}
+              title={takeaway.title}
+              text={takeaway.text}
+              delay={index * 150}
+            />
+          ))}
         </div>
       </section>
 
