@@ -3,6 +3,7 @@ import InputForm from './components/InputForm';
 import ResultsDisplay from './components/ResultsDisplay';
 import StagedFunding from './components/StagedFunding';
 import ExportOptions from './components/ExportOptions';
+import MethodologyModal from './components/MethodologyModal';
 import type { UserInputs, CalculationResults } from './types/calculator';
 import { calculateInvestment, calculateStagedFunding } from './utils/calculations';
 import { loadCalculation } from './utils/storage';
@@ -15,6 +16,7 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('input');
   const [inputs, setInputs] = useState<UserInputs | null>(null);
   const [results, setResults] = useState<CalculationResults | null>(null);
+  const [showMethodology, setShowMethodology] = useState(false);
 
   // Check for ?load= parameter on mount
   useEffect(() => {
@@ -129,7 +131,11 @@ function App() {
         )}
 
         {currentScreen === 'export' && inputs && results && (
-          <ExportOptions inputs={inputs} results={results} />
+          <ExportOptions
+            inputs={inputs}
+            results={results}
+            onShowMethodology={() => setShowMethodology(true)}
+          />
         )}
       </main>
 
@@ -148,14 +154,20 @@ function App() {
               <h3 className="font-medium text-gray-900 mb-3">Resources</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="/vianeo-tools/methodology.pdf" className="text-gray-600 hover:text-blue-600">
+                  <button
+                    onClick={() => setShowMethodology(true)}
+                    className="text-gray-600 hover:text-blue-600 cursor-pointer"
+                  >
                     Methodology
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#data-sources" className="text-gray-600 hover:text-blue-600">
+                  <button
+                    onClick={() => setShowMethodology(true)}
+                    className="text-gray-600 hover:text-blue-600 cursor-pointer"
+                  >
                     Data Sources
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
@@ -173,6 +185,12 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Methodology Modal */}
+      <MethodologyModal
+        isOpen={showMethodology}
+        onClose={() => setShowMethodology(false)}
+      />
     </div>
   );
 }
