@@ -1,12 +1,12 @@
-import type { StagedFundingPhase } from '../types/calculator';
+import type { StagedFunding, FundingPhase } from '../types/calculator';
 import { formatCurrency } from '../utils/calculations';
 
-interface StagedFundingProps {
-  phases: StagedFundingPhase[];
+interface StagedFundingDisplayProps {
+  stagedFunding: StagedFunding;
   onBack: () => void;
 }
 
-function PhaseCard({ phase, index }: { phase: StagedFundingPhase; index: number }) {
+function PhaseCard({ phase, index }: { phase: FundingPhase; index: number }) {
   const colors = [
     { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-600' },
     { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-600' },
@@ -46,7 +46,7 @@ function PhaseCard({ phase, index }: { phase: StagedFundingPhase; index: number 
 
         <div>
           <div className="text-sm font-medium text-gray-700 mb-1">Key Milestone</div>
-          <p className="text-sm text-gray-600">{phase.milestone}</p>
+          <p className="text-sm text-gray-600">{phase.keyMilestone}</p>
         </div>
 
         <div className="bg-white rounded-lg p-3 border border-gray-200">
@@ -68,10 +68,7 @@ function PhaseCard({ phase, index }: { phase: StagedFundingPhase; index: number 
   );
 }
 
-export default function StagedFunding({ phases, onBack }: StagedFundingProps) {
-  const totalInvestment = phases.reduce((sum, phase) => sum + phase.investment, 0);
-  const totalDuration = phases.reduce((sum, phase) => sum + phase.duration, 0);
-
+export default function StagedFundingDisplay({ stagedFunding, onBack }: StagedFundingDisplayProps) {
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="text-center mb-12">
@@ -86,15 +83,15 @@ export default function StagedFunding({ phases, onBack }: StagedFundingProps) {
         <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-6">
           <div className="text-sm text-gray-600 mb-2">Total Investment</div>
           <div className="text-4xl font-bold text-blue-700">
-            {formatCurrency(totalInvestment)}
+            {formatCurrency(stagedFunding.totalInvestment)}
           </div>
-          <div className="text-sm text-gray-600 mt-2">Across all phases</div>
+          <div className="text-sm text-gray-600 mt-2">Across all 3 phases</div>
         </div>
 
         <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-6">
           <div className="text-sm text-gray-600 mb-2">Total Timeline</div>
           <div className="text-4xl font-bold text-green-700">
-            {totalDuration} months
+            {stagedFunding.totalDuration} months
           </div>
           <div className="text-sm text-gray-600 mt-2">From start to completion</div>
         </div>
@@ -108,7 +105,7 @@ export default function StagedFunding({ phases, onBack }: StagedFundingProps) {
 
           {/* Phase cards */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {phases.map((phase, index) => (
+            {stagedFunding.phases.map((phase, index) => (
               <PhaseCard key={phase.name} phase={phase} index={index} />
             ))}
           </div>
@@ -121,7 +118,7 @@ export default function StagedFunding({ phases, onBack }: StagedFundingProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span className="font-medium text-gray-900">Reduce Risk</span>
@@ -133,7 +130,7 @@ export default function StagedFunding({ phases, onBack }: StagedFundingProps) {
 
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
               <span className="font-medium text-gray-900">Track Progress</span>
@@ -145,7 +142,7 @@ export default function StagedFunding({ phases, onBack }: StagedFundingProps) {
 
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span className="font-medium text-gray-900">Optimize Capital</span>
