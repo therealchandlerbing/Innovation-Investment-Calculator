@@ -180,7 +180,6 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
                 <AnimatedNumber
                   value={realistic.total}
                   duration={2000}
-                  prefix="$"
                   className="inline-block"
                 />
               </div>
