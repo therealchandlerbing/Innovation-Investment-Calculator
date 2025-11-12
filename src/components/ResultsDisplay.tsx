@@ -1,12 +1,11 @@
 import { useState, useRef } from 'react';
 import type { CalculationResults, Scenario } from '../types/calculator';
 import { formatCurrency } from '../utils/calculations';
-import { generateTakeaways } from '../utils/takeaways';
 import { generateDynamicInsight } from '../utils/dynamicInsights';
-import TakeawayCallout from './TakeawayCallout';
 import VisualChart from './VisualChart';
 import AnimatedNumber from './AnimatedNumber';
 import ConfidenceMeter from './ConfidenceMeter';
+import ScenarioComparison from './ScenarioComparison';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
@@ -268,27 +267,6 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
         </div>
       </section>
 
-      {/* Key Insights */}
-      <section className="mb-12">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Key Considerations for Your Scenario</h2>
-          <p className="text-gray-600">
-            Personalized insights based on your specific combination of technology, stage, and market
-          </p>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {generateTakeaways(results).map((takeaway, index) => (
-            <TakeawayCallout
-              key={index}
-              type={takeaway.type}
-              icon={takeaway.icon}
-              title={takeaway.title}
-              text={takeaway.text}
-              delay={index * 150}
-            />
-          ))}
-        </div>
-      </section>
 
       {/* Three scenario cards */}
       <div ref={scenariosRef} className="scroll-mt-6 mb-12">
@@ -301,15 +279,16 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
         {/* Visual Chart */}
         <VisualChart scenarios={results.scenarios} />
+
+        {/* Scenario Comparison Table */}
+        <ScenarioComparison scenarios={results.scenarios} />
       </div>
 
       {/* Section 2: Development Requirements */}
       <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-            Section 2
-          </span>
+        <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Development Requirements</h2>
+          <p className="text-sm text-gray-600 mt-1">Technical infrastructure and team resources needed</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -343,11 +322,9 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
       {/* Section 3: GTM Investment */}
       <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-            Section 3
-          </span>
+        <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Go-to-Market Investment</h2>
+          <p className="text-sm text-gray-600 mt-1">Marketing, sales, and partnership development strategy</p>
         </div>
 
         {/* Year 1: Market Entry */}
@@ -412,11 +389,9 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
       {/* Section 4: Risk Contingencies */}
       <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-            Section 4
-          </span>
+        <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Risk Contingencies</h2>
+          <p className="text-sm text-gray-600 mt-1">Buffer allocation for unexpected challenges and delays</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -465,11 +440,9 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
       {/* Section 5: Funding Strategy */}
       <div ref={fundingRef} className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200 scroll-mt-6">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-            Section 5
-          </span>
+        <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Recommended Funding Strategy</h2>
+          <p className="text-sm text-gray-600 mt-1">Phased investment approach with clear validation gates</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -534,11 +507,9 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
       {/* Section 6: Exit Scenarios */}
       <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-            Section 6
-          </span>
+        <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Potential Exit Scenarios</h2>
+          <p className="text-sm text-gray-600 mt-1">Typical outcomes based on market positioning and timing</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
