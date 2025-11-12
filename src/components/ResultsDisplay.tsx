@@ -5,6 +5,7 @@ import { generateTakeaways } from '../utils/takeaways';
 import { generateDynamicInsight } from '../utils/dynamicInsights';
 import TakeawayCallout from './TakeawayCallout';
 import VisualChart from './VisualChart';
+import AnimatedNumber from './AnimatedNumber';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
@@ -175,7 +176,12 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
                 Recommended Total Investment
               </div>
               <div className="font-mono text-5xl lg:text-7xl font-light text-white mb-4 tracking-tight">
-                {formatCurrency(realistic.total)}
+                <AnimatedNumber
+                  value={realistic.total}
+                  duration={2000}
+                  prefix="$"
+                  className="inline-block"
+                />
               </div>
               <div className="flex items-center gap-4 flex-wrap">
                 <span className="inline-flex items-center px-3 py-1.5 bg-optimistic-from/20 border border-optimistic-from/30 rounded-lg text-sm font-semibold text-green-200">
