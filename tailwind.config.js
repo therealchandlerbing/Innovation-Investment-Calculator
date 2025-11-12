@@ -7,14 +7,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Design System Colors - Innovation Calculator
+        // Design System Colors - Investment-Grade Palette
         primary: '#0f172a',       // Navy - Headers, primary buttons
         'primary-light': '#1e293b', // Navy hover state
         accent: '#3b82f6',         // Blue - Links, badges, highlights
         'accent-light': '#60a5fa',  // Blue hover state
-        success: '#10b981',        // Green - Optimistic scenario
-        warning: '#f59e0b',        // Orange - Realistic scenario
-        danger: '#ef4444',         // Red - Conservative scenario
+
+        // Refined Scenario Colors (Elegant Gradients)
+        'optimistic-from': '#00BFA5', // Teal gradient start
+        'optimistic-to': '#00E5CC',   // Teal gradient end
+        'realistic-from': '#FFB300',  // Gold gradient start
+        'realistic-to': '#FFC947',    // Gold gradient end
+        'conservative-from': '#FF6B6B', // Coral gradient start
+        'conservative-to': '#FF8E8E',   // Coral gradient end
+
+        // Legacy (for backwards compatibility)
+        success: '#00BFA5',        // Optimistic teal
+        warning: '#FFB300',        // Realistic gold
+        danger: '#FF6B6B',         // Conservative coral
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
@@ -32,9 +42,19 @@ export default {
           '0%': { opacity: '0', transform: 'translateX(-20px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        pulseGlow: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.7' },
+        },
       },
       animation: {
         slideIn: 'slideIn 0.6s ease-out',
+        fadeIn: 'fadeIn 0.8s ease-out',
+        pulseGlow: 'pulseGlow 2s ease-in-out infinite',
       },
     },
   },

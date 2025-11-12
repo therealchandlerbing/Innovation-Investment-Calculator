@@ -26,9 +26,9 @@ export default function VisualChart({ scenarios }: VisualChartProps) {
   };
 
   const getColorClass = (name: string) => {
-    if (name === 'Optimistic') return 'from-success to-[#059669]';
-    if (name === 'Realistic') return 'from-warning to-[#d97706]';
-    return 'from-danger to-[#dc2626]';
+    if (name === 'Optimistic') return 'from-optimistic-from to-optimistic-to';
+    if (name === 'Realistic') return 'from-realistic-from to-realistic-to';
+    return 'from-conservative-from to-conservative-to';
   };
 
   return (
