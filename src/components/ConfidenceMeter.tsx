@@ -13,9 +13,9 @@ export default function ConfidenceMeter({
   conservative,
   className = ''
 }: ConfidenceMeterProps) {
-  // Calculate positions as percentages
+  // Calculate positions as percentages with safeguards
   const range = conservative - optimistic;
-  const realisticPosition = ((realistic - optimistic) / range) * 100;
+  const realisticPosition = range > 0 ? ((realistic - optimistic) / range) * 100 : 50;
 
   return (
     <div className={`${className}`}>
