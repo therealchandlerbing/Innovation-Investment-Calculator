@@ -15,22 +15,22 @@ interface ResultsDisplayProps {
 function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecommended: boolean }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Design System: Color scheme per scenario type
+  // Design System: Elegant gradient color scheme per scenario type
   const colors = {
     'Optimistic': {
-      topBar: 'bg-success',
-      badge: 'bg-success/10 text-success',
-      ring: 'ring-success',
+      topBar: 'bg-gradient-to-r from-optimistic-from to-optimistic-to',
+      badge: 'bg-optimistic-from/10 text-optimistic-from',
+      ring: 'ring-optimistic-from',
     },
     'Realistic': {
-      topBar: 'bg-warning',
-      badge: 'bg-warning/10 text-warning',
-      ring: 'ring-warning',
+      topBar: 'bg-gradient-to-r from-realistic-from to-realistic-to',
+      badge: 'bg-realistic-from/10 text-realistic-from',
+      ring: 'ring-realistic-from',
     },
     'Conservative': {
-      topBar: 'bg-danger',
-      badge: 'bg-danger/10 text-danger',
-      ring: 'ring-danger',
+      topBar: 'bg-gradient-to-r from-conservative-from to-conservative-to',
+      badge: 'bg-conservative-from/10 text-conservative-from',
+      ring: 'ring-conservative-from',
     },
   };
 
@@ -178,7 +178,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
                 {formatCurrency(realistic.total)}
               </div>
               <div className="flex items-center gap-4 flex-wrap">
-                <span className="inline-flex items-center px-3 py-1.5 bg-success/20 border border-success/30 rounded-lg text-sm font-semibold text-green-200">
+                <span className="inline-flex items-center px-3 py-1.5 bg-optimistic-from/20 border border-optimistic-from/30 rounded-lg text-sm font-semibold text-green-200">
                   ±15% confidence range
                 </span>
                 <span className="font-mono text-lg font-semibold text-white/90">
@@ -490,7 +490,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           {/* Phase 2 */}
           <div className="bg-gradient-to-br from-green-50 to-white border-2 border-green-200 rounded-lg p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-success text-white rounded-full flex items-center justify-center font-bold text-lg">2</div>
+              <div className="w-10 h-10 bg-gradient-to-br from-optimistic-from to-optimistic-to text-white rounded-full flex items-center justify-center font-bold text-lg">2</div>
               <div>
                 <div className="font-bold text-gray-900 text-lg">Phase 2: Build</div>
                 <div className="text-sm text-gray-600">Months 7-18</div>
@@ -551,9 +551,9 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           </div>
 
           {/* Strategic Acquisition */}
-          <div className="bg-gradient-to-br from-green-50 to-white border-2 border-success rounded-lg p-6 hover:shadow-lg transition-shadow">
+          <div className="bg-gradient-to-br from-green-50 to-white border-2 border-optimistic-from rounded-lg p-6 hover:shadow-lg transition-shadow">
             <div className="text-center mb-4">
-              <div className="text-4xl font-bold font-mono text-success mb-2">3-5x</div>
+              <div className="text-4xl font-bold font-mono text-optimistic-from mb-2">3-5x</div>
               <div className="text-lg font-bold text-gray-900">Strategic Acquisition</div>
             </div>
             <p className="text-gray-700 text-sm text-center mb-4">Acquisition by strategic partner for market position</p>
