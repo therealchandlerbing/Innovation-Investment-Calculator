@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react';
+import { formatCurrency } from '../utils/calculations';
 
 interface AnimatedNumberProps {
   value: number;
   duration?: number;
   className?: string;
-  prefix?: string;
-  suffix?: string;
 }
 
 export default function AnimatedNumber({
   value,
   duration = 1500,
-  className = '',
-  prefix = '',
-  suffix = ''
+  className = ''
 }: AnimatedNumberProps) {
   const [displayValue, setDisplayValue] = useState(0);
 
@@ -45,14 +42,9 @@ export default function AnimatedNumber({
     };
   }, [value, duration]);
 
-  // Format number with commas
-  const formatNumber = (num: number) => {
-    return num.toLocaleString('en-US');
-  };
-
   return (
     <span className={className}>
-      {prefix}{formatNumber(displayValue)}{suffix}
+      {formatCurrency(displayValue)}
     </span>
   );
 }
