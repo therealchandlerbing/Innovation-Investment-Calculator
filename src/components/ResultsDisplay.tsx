@@ -57,8 +57,8 @@ function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecom
 
       {/* Total Investment - Design System: Monospace for numbers */}
       <div className="mb-6">
-        <div className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-2">Total Investment</div>
-        <div className="text-3xl lg:text-4xl font-bold text-gray-900 font-mono tracking-tight">
+        <div className="text-xs uppercase tracking-wide font-semibold text-gray-500 mb-2">Total Investment</div>
+        <div className="text-3xl lg:text-4xl font-light text-gray-900 font-mono tracking-tight">
           {formatCurrency(scenario.total)}
         </div>
       </div>
@@ -66,14 +66,14 @@ function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecom
       {/* Timeline metrics */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
-          <div className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-1">Development</div>
-          <div className="text-lg font-bold text-gray-900 font-mono">
+          <div className="text-xs uppercase tracking-wide font-semibold text-gray-500 mb-1">Development</div>
+          <div className="text-lg font-medium text-gray-900 font-mono">
             {scenario.timeline} mo
           </div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wider font-semibold text-gray-500 mb-1">Break-even</div>
-          <div className="text-lg font-bold text-gray-900 font-mono">
+          <div className="text-xs uppercase tracking-wide font-semibold text-gray-500 mb-1">Break-even</div>
+          <div className="text-lg font-medium text-gray-900 font-mono">
             {scenario.breakEven} mo
           </div>
         </div>
@@ -171,10 +171,10 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
             {/* Primary Investment Display */}
             <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 lg:p-8">
-              <div className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-3">
+              <div className="text-sm font-semibold text-white/70 uppercase tracking-wide mb-3">
                 Recommended Total Investment
               </div>
-              <div className="font-mono text-5xl lg:text-6xl font-extrabold text-white mb-4 tracking-tight">
+              <div className="font-mono text-5xl lg:text-7xl font-light text-white mb-4 tracking-tight">
                 {formatCurrency(realistic.total)}
               </div>
               <div className="flex items-center gap-4 flex-wrap">
@@ -195,10 +195,10 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           <div className="flex items-center gap-4 lg:gap-6 p-6 lg:p-8 hover:bg-gray-50 transition-colors">
             <div className="text-4xl lg:text-5xl opacity-80 flex-shrink-0">⏱️</div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
                 Development Timeline
               </div>
-              <div className="font-mono text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
+              <div className="font-mono text-2xl lg:text-3xl font-light text-gray-900 mb-1">
                 {realistic.timeline} mo
               </div>
               <div className="text-sm text-gray-600">
@@ -211,10 +211,10 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           <div className="flex items-center gap-4 lg:gap-6 p-6 lg:p-8 hover:bg-gray-50 transition-colors">
             <div className="text-4xl lg:text-5xl opacity-80 flex-shrink-0">📈</div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
                 Break-Even Point
               </div>
-              <div className="font-mono text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
+              <div className="font-mono text-2xl lg:text-3xl font-light text-gray-900 mb-1">
                 Month {realistic.breakEven}
               </div>
               <div className="text-sm text-gray-600">
@@ -227,10 +227,10 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           <div className="flex items-center gap-4 lg:gap-6 p-6 lg:p-8 hover:bg-gray-50 transition-colors">
             <div className="text-4xl lg:text-5xl opacity-80 flex-shrink-0">📊</div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
                 Best to Worst Case
               </div>
-              <div className="font-mono text-xl lg:text-2xl xl:text-3xl font-bold text-gray-900 mb-1 break-words">
+              <div className="font-mono text-xl lg:text-2xl xl:text-3xl font-light text-gray-900 mb-1 break-words">
                 {formatCurrency(optimistic.total)}-{formatCurrency(conservative.total)}
               </div>
               <div className="text-sm text-gray-600">
@@ -478,7 +478,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
               </div>
             </div>
             <div className="mb-4">
-              <div className="text-3xl font-bold font-mono text-gray-900">{formatCurrency(realistic.total * 0.15)}</div>
+              <div className="text-3xl font-light font-mono text-gray-900">{formatCurrency(realistic.total * 0.15)}</div>
               <div className="text-sm text-gray-600">15% of total</div>
             </div>
             <div className="bg-white rounded p-3 border border-gray-200">
@@ -497,7 +497,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
               </div>
             </div>
             <div className="mb-4">
-              <div className="text-3xl font-bold font-mono text-gray-900">{formatCurrency(realistic.total * 0.35)}</div>
+              <div className="text-3xl font-light font-mono text-gray-900">{formatCurrency(realistic.total * 0.35)}</div>
               <div className="text-sm text-gray-600">35% of total</div>
             </div>
             <div className="bg-white rounded p-3 border border-gray-200">
@@ -516,7 +516,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
               </div>
             </div>
             <div className="mb-4">
-              <div className="text-3xl font-bold font-mono text-gray-900">{formatCurrency(realistic.total * 0.50)}</div>
+              <div className="text-3xl font-light font-mono text-gray-900">{formatCurrency(realistic.total * 0.50)}</div>
               <div className="text-sm text-gray-600">50% of total</div>
             </div>
             <div className="bg-white rounded p-3 border border-gray-200">
@@ -540,7 +540,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           {/* Acqui-hire */}
           <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-300 rounded-lg p-6 hover:shadow-lg transition-shadow">
             <div className="text-center mb-4">
-              <div className="text-4xl font-bold font-mono text-gray-900 mb-2">0.5-2x</div>
+              <div className="text-4xl font-light font-mono text-gray-900 mb-2">0.5-2x</div>
               <div className="text-lg font-bold text-gray-900">Acqui-hire</div>
             </div>
             <p className="text-gray-700 text-sm text-center mb-4">Team and technology acquisition by larger player</p>
@@ -553,7 +553,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           {/* Strategic Acquisition */}
           <div className="bg-gradient-to-br from-green-50 to-white border-2 border-optimistic-from rounded-lg p-6 hover:shadow-lg transition-shadow">
             <div className="text-center mb-4">
-              <div className="text-4xl font-bold font-mono text-optimistic-from mb-2">3-5x</div>
+              <div className="text-4xl font-light font-mono text-optimistic-from mb-2">3-5x</div>
               <div className="text-lg font-bold text-gray-900">Strategic Acquisition</div>
             </div>
             <p className="text-gray-700 text-sm text-center mb-4">Acquisition by strategic partner for market position</p>
@@ -566,7 +566,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           {/* Growth Trajectory */}
           <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-accent rounded-lg p-6 hover:shadow-lg transition-shadow">
             <div className="text-center mb-4">
-              <div className="text-4xl font-bold font-mono text-accent mb-2">10x+</div>
+              <div className="text-4xl font-light font-mono text-accent mb-2">10x+</div>
               <div className="text-lg font-bold text-gray-900">Growth Trajectory</div>
             </div>
             <p className="text-gray-700 text-sm text-center mb-4">Continue growth to IPO or major acquisition</p>
