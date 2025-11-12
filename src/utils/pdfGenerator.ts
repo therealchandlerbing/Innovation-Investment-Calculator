@@ -41,10 +41,14 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   pdf.setTextColor(255, 255, 255);
   pdf.text('Innovation Investment Analysis', pageWidth / 2, 155, { align: 'center' });
 
-  pdf.setFontSize(14);
+  // Strategic identity line
+  pdf.setFontSize(12);
   pdf.setFont('helvetica', 'normal');
+  pdf.setTextColor(100, 200, 255);
+  pdf.text(`${inputs.technologyType} | ${inputs.currentStage} | ${inputs.geographicLocation}`, pageWidth / 2, 167, { align: 'center' });
+
+  pdf.setFontSize(13);
   pdf.setTextColor(150, 150, 150);
-  pdf.text(inputs.technologyType, pageWidth / 2, 170, { align: 'center' });
   pdf.text(inputs.targetMarket, pageWidth / 2, 180, { align: 'center' });
 
   // Trust signals
@@ -257,9 +261,30 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
 
   yPos += 35;
 
+  // Key Decision Signal callout
+  pdf.setFillColor(240, 253, 244);
+  pdf.setDrawColor(34, 197, 94);
+  pdf.setLineWidth(2);
+  pdf.roundedRect(margin, yPos, pageWidth - 2 * margin, 28, 3, 3, 'FD');
+
+  pdf.setFontSize(10);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(22, 163, 74);
+  pdf.text('✓ KEY DECISION SIGNAL', margin + 5, yPos + 8);
+
+  pdf.setFontSize(9);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setTextColor(21, 128, 61);
+  const decisionText = `Proceed with staged funding approach. ${realisticScenario.timeline}-month timeline is achievable with proper validation gates. Investment level aligns with ${inputs.targetMarket} market benchmarks.`;
+  const decisionLines = pdf.splitTextToSize(decisionText, pageWidth - 2 * margin - 10);
+  pdf.text(decisionLines, margin + 5, yPos + 16);
+
+  yPos += 38;
+
   // Input summary
   pdf.setFontSize(12);
   pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(0, 0, 0);
   pdf.text('Project Details', margin, yPos);
   yPos += 8;
 
@@ -302,19 +327,22 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
     riskBuffer: [245, 158, 11], // Orange
   };
 
+  // Scenario icons for visual recognition
+  const scenarioIcons = ['☀️', '⚖️', '🌧️'];
+
   results.scenarios.forEach((scenario, index) => {
-    // Scenario label
+    // Scenario label with icon
     pdf.setFontSize(11);
     pdf.setFont('helvetica', 'bold');
     pdf.setTextColor(0, 0, 0);
-    pdf.text(scenario.name, margin, yPos);
+    pdf.text(`${scenarioIcons[index]} ${scenario.name}`, margin, yPos);
 
     // Recommended badge
     if (index === 1) {
       pdf.setFontSize(8);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(59, 130, 246);
-      pdf.text('★ RECOMMENDED', margin + 45, yPos);
+      pdf.text('★ RECOMMENDED', margin + 58, yPos);
     }
 
     yPos += 8;
@@ -541,11 +569,11 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
       pdf.line(gateX, gateY + diamondSize, gateX - diamondSize, gateY);
       pdf.line(gateX - diamondSize, gateY, gateX, gateY - diamondSize);
 
-      // Gate label
+      // Gate label with unlock icon
       pdf.setFontSize(7);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(239, 68, 68);
-      pdf.text('GATE', gateX - 4, gateY + 12);
+      pdf.text('🔓 GATE', gateX - 6, gateY + 12);
     }
   });
 
@@ -558,11 +586,14 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   // Phase details below timeline
   yPos = timelineY + 25;
 
+  // Phase milestone icons
+  const milestoneIcons = ['🚀', '💡', '📈'];
+
   stagedFunding.phases.forEach((phase, index) => {
     pdf.setFontSize(10);
     pdf.setFont('helvetica', 'bold');
     pdf.setTextColor(0, 0, 0);
-    pdf.text(phase.name, margin, yPos);
+    pdf.text(`${milestoneIcons[index]} ${phase.name}`, margin, yPos);
 
     pdf.setFontSize(8);
     pdf.setFont('helvetica', 'normal');
