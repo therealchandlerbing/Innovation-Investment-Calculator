@@ -6,6 +6,7 @@ import { generateDynamicInsight } from '../utils/dynamicInsights';
 import TakeawayCallout from './TakeawayCallout';
 import VisualChart from './VisualChart';
 import AnimatedNumber from './AnimatedNumber';
+import ConfidenceMeter from './ConfidenceMeter';
 
 interface ResultsDisplayProps {
   results: CalculationResults;
@@ -175,7 +176,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
               <div className="text-sm font-semibold text-white/70 uppercase tracking-wide mb-3">
                 Recommended Total Investment
               </div>
-              <div className="font-mono text-5xl lg:text-7xl font-light text-white mb-4 tracking-tight">
+              <div className="font-mono text-5xl lg:text-7xl font-light text-white mb-6 tracking-tight">
                 <AnimatedNumber
                   value={realistic.total}
                   duration={2000}
@@ -183,14 +184,13 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
                   className="inline-block"
                 />
               </div>
-              <div className="flex items-center gap-4 flex-wrap">
-                <span className="inline-flex items-center px-3 py-1.5 bg-optimistic-from/20 border border-optimistic-from/30 rounded-lg text-sm font-semibold text-green-200">
-                  ±15% confidence range
-                </span>
-                <span className="font-mono text-lg font-semibold text-white/90">
-                  {formatCurrency(results.confidenceInterval.min)} - {formatCurrency(results.confidenceInterval.max)}
-                </span>
-              </div>
+
+              {/* Visual Confidence Meter */}
+              <ConfidenceMeter
+                optimistic={optimistic.total}
+                realistic={realistic.total}
+                conservative={conservative.total}
+              />
             </div>
           </div>
         </div>
