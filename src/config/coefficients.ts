@@ -333,7 +333,7 @@ export const SCENARIO_MODIFIERS = {
 };
 
 // Risk Buffer Percentage
-export const RISK_BUFFER_PERCENTAGE = 0.40; // 40% of development costs
+export const RISK_BUFFER_PERCENTAGE = 0.15; // 15% of base costs (development + regulatory + GTM)
 
 // Fixed Annual Team Costs
 export const ANNUAL_TEAM_COSTS = 900000; // $900K per year

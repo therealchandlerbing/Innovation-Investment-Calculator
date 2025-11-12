@@ -182,7 +182,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   yPos += 7;
 
   const assumptions = [
-    { label: '40% Risk Buffer', rationale: 'Historical volatility analysis across 200+ similar-stage innovations shows median buffer of 35-45% for stage changes and market uncertainties.' },
+    { label: '15% Risk Buffer', rationale: 'Conservative contingency for scope changes, market uncertainties, and timeline extensions. Applied to base costs (development + regulatory + GTM) to account for execution risk while avoiding over-capitalization.' },
     { label: 'Timeline Calibration', rationale: `${inputs.currentStage} at TRL ${inputs.technologyType.includes('7') ? '7-8' : 'varies'}: industry benchmarks show ${realisticScenario.timeline}mo median with ±20% variance.` },
     { label: 'Regulatory Multiplier', rationale: `${inputs.regulatoryEnvironment} environment: applies ${inputs.regulatoryEnvironment === 'Heavy (FDA/EPA level)' ? '2.0-2.5x' : inputs.regulatoryEnvironment === 'Moderate' ? '1.3-1.5x' : '1.0x'} cost factor based on historical precedents.` },
   ];
@@ -903,7 +903,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   pdf.text('Base Formula:', margin + 5, yPos + 7);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(60, 60, 60);
-  pdf.text('Development + Regulatory + GTM Year 1 + Risk Buffer (40%)', margin + 28, yPos + 7);
+  pdf.text('Development + Regulatory + GTM Year 1 + Risk Buffer (15%)', margin + 28, yPos + 7);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(161, 98, 7);

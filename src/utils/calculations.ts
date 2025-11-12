@@ -58,11 +58,12 @@ export function calculateInvestment(inputs: UserInputs): CalculationResults {
     // Technical costs (subset of development, for breakdown display)
     const technical = development * 0.15;
 
-    // Risk buffer (40% of development costs only, per reference)
-    const riskBuffer = development * 0.40;
+    // Risk buffer (15% of base costs: development + regulatory + GTM)
+    const baseCosts = development + regulatory + gtmYear1;
+    const riskBuffer = baseCosts * 0.15;
 
     // Total investment (Development + Regulatory + GTM Year 1 + Risk Buffer)
-    const total = development + regulatory + gtmYear1 + riskBuffer;
+    const total = baseCosts + riskBuffer;
 
     // Timeline with scenario adjustment
     const adjustedTimeline = timeline * config.timelineMultiplier;
