@@ -37,10 +37,10 @@ export default function VisualChart({ scenarios }: VisualChartProps) {
   const industryAverageHeight = (industryAverage / maxValue) * 100;
 
   return (
-    <div className="mt-10 p-8 bg-white rounded-xl border-2 border-gray-200 shadow-md">
-      <div className="mb-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">Your Scenarios vs Industry Benchmark</h3>
-        <p className="text-sm text-gray-600">Based on 200+ similar implementations at comparable stages</p>
+    <div className="mt-12 p-8 lg:p-10 bg-white rounded-xl border-2 border-gray-200 shadow-lg">
+      <div className="mb-8">
+        <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Your Scenarios vs Industry Benchmark</h3>
+        <p className="text-base text-gray-600">Based on 200+ similar implementations at comparable stages</p>
       </div>
 
       <div className="relative">
@@ -82,23 +82,23 @@ export default function VisualChart({ scenarios }: VisualChartProps) {
           ))}
         </div>
 
-        {/* Legend */}
-        <div className="mt-6 flex items-center justify-center gap-6 text-xs">
+        {/* Legend - Enhanced with better spacing and sizing */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-gradient-to-r from-optimistic-from to-optimistic-to rounded"></div>
-            <span className="text-gray-600">Best Case</span>
+            <div className="w-5 h-5 bg-gradient-to-r from-optimistic-from to-optimistic-to rounded"></div>
+            <span className="text-gray-700 font-medium">Best Case</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-gradient-to-r from-realistic-from to-realistic-to rounded ring-2 ring-realistic-from"></div>
-            <span className="text-gray-900 font-semibold">Most Likely</span>
+            <div className="w-5 h-5 bg-gradient-to-r from-realistic-from to-realistic-to rounded ring-2 ring-realistic-from"></div>
+            <span className="text-gray-900 font-bold">Most Likely</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-gradient-to-r from-conservative-from to-conservative-to rounded"></div>
-            <span className="text-gray-600">Worst Case</span>
+            <div className="w-5 h-5 bg-gradient-to-r from-conservative-from to-conservative-to rounded"></div>
+            <span className="text-gray-700 font-medium">Worst Case</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-8 h-0.5 border-t-2 border-dashed border-blue-500"></div>
-            <span className="text-blue-600 font-medium">Industry Average</span>
+            <span className="text-blue-600 font-semibold">Industry Average</span>
           </div>
         </div>
       </div>
