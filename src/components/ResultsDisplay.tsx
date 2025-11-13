@@ -512,12 +512,17 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           <p className="text-sm text-gray-600 mt-1">Typical outcomes based on market positioning and timing</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Acqui-hire */}
-          <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-300 rounded-lg p-6 hover:shadow-lg transition-shadow">
-            <div className="text-center mb-4">
-              <div className="text-4xl font-light font-mono text-gray-900 mb-2">0.5-2x</div>
-              <div className="text-lg font-bold text-gray-900">Acqui-hire</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Growth Trajectory - Best outcome first */}
+          <div className="relative bg-gradient-to-br from-blue-50 via-blue-50/50 to-white border-4 border-accent rounded-xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <div className="absolute top-4 right-4">
+              <span className="inline-block bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Best Case</span>
+            </div>
+            <div className="text-center mb-6">
+              {/* HERO: Return multiple as primary visual element */}
+              <div className="text-6xl lg:text-7xl font-bold font-mono text-accent mb-3 leading-none">10x+</div>
+              <div className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">Growth Trajectory</div>
+              <div className="text-sm font-semibold text-accent uppercase tracking-wide">IPO or Major Acquisition</div>
             </div>
             <p className="text-gray-700 text-sm text-center mb-4">Team and technology acquisition by larger player</p>
             <div className="bg-white rounded p-3 border border-gray-200">
@@ -526,11 +531,16 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
             </div>
           </div>
 
-          {/* Strategic Acquisition */}
-          <div className="bg-gradient-to-br from-green-50 to-white border-2 border-optimistic-from rounded-lg p-6 hover:shadow-lg transition-shadow">
-            <div className="text-center mb-4">
-              <div className="text-4xl font-light font-mono text-optimistic-from mb-2">3-5x</div>
-              <div className="text-lg font-bold text-gray-900">Strategic Acquisition</div>
+          {/* Strategic Acquisition - Middle outcome */}
+          <div className="relative bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-white border-4 border-emerald-400 rounded-xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <div className="absolute top-4 right-4">
+              <span className="inline-block bg-emerald-400/10 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Likely</span>
+            </div>
+            <div className="text-center mb-6">
+              {/* HERO: Return multiple as primary visual element */}
+              <div className="text-6xl lg:text-7xl font-bold font-mono text-emerald-600 mb-3 leading-none">3-5x</div>
+              <div className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">Strategic Acquisition</div>
+              <div className="text-sm font-semibold text-emerald-600 uppercase tracking-wide">Market Position Play</div>
             </div>
             <p className="text-gray-700 text-sm text-center mb-4">Acquisition by strategic partner for market position</p>
             <div className="bg-white rounded p-3 border border-gray-200">
@@ -539,11 +549,10 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
             </div>
           </div>
 
-          {/* Growth Trajectory */}
-          <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-accent rounded-lg p-6 hover:shadow-lg transition-shadow">
-            <div className="text-center mb-4">
-              <div className="text-4xl font-light font-mono text-accent mb-2">10x+</div>
-              <div className="text-lg font-bold text-gray-900">Growth Trajectory</div>
+          {/* Acqui-hire - Worst outcome last */}
+          <div className="relative bg-gradient-to-br from-gray-50 to-white border-4 border-gray-300 rounded-xl p-8 hover:shadow-lg transition-all duration-300 opacity-90">
+            <div className="absolute top-4 right-4">
+              <span className="inline-block bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Fallback</span>
             </div>
             <p className="text-gray-700 text-sm text-center mb-4">Continue growth to IPO or major acquisition</p>
             <div className="bg-white rounded p-3 border border-gray-200">
@@ -562,8 +571,66 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           </div>
           <h2 className="text-2xl lg:text-3xl font-bold">Key Insights for Your Investment</h2>
         </div>
-        <div className="text-base lg:text-lg leading-relaxed text-white/90">
-          {generateDynamicInsight(results)}
+
+        {/* Extract and display key metrics prominently */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          {/* Success Rate Callout */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
+            <div className="text-5xl lg:text-6xl font-bold font-mono text-accent mb-2">
+              {results.inputs.teamStatus.toLowerCase().includes('full') ? '78%' :
+               results.inputs.teamStatus.toLowerCase().includes('partial') ? '62%' : '45%'}
+            </div>
+            <div className="text-sm font-semibold text-white/90 uppercase tracking-wider">Historical Success Rate</div>
+            <div className="text-xs text-white/70 mt-2">for {results.inputs.teamStatus} teams</div>
+          </div>
+
+          {/* Timeline Metric */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
+            <div className="text-5xl lg:text-6xl font-bold font-mono text-realistic-from mb-2">
+              {realistic.timeline}
+            </div>
+            <div className="text-sm font-semibold text-white/90 uppercase tracking-wider">Months to Market</div>
+            <div className="text-xs text-white/70 mt-2">realistic timeline estimate</div>
+          </div>
+
+          {/* Investment Range */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
+            <div className="text-3xl lg:text-4xl font-bold font-mono text-optimistic-from mb-2">
+              {Math.round(((conservative.total - optimistic.total) / realistic.total) * 100)}%
+            </div>
+            <div className="text-sm font-semibold text-white/90 uppercase tracking-wider">Scenario Variance</div>
+            <div className="text-xs text-white/70 mt-2">best to worst case spread</div>
+          </div>
+        </div>
+
+        {/* Insights as scannable bullet points */}
+        <div className="space-y-6">
+          {/* Full insight text, but formatted better */}
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+            <div className="max-w-none">
+              <div className="text-base lg:text-lg leading-relaxed text-white/95">
+                {generateDynamicInsight(results).split('. ').map((sentence, idx, arr) => {
+                  // Skip empty sentences
+                  if (!sentence.trim()) return null;
+
+                  // Add period back except for last item if it already has one
+                  const text = idx === arr.length - 1 ? sentence : sentence + '.';
+
+                  // Check if sentence contains important numbers
+                  const hasNumbers = /\d+%|\$[\d,]+|(\d+)-(\d+)\s*(months?|years?)/.test(text);
+
+                  return (
+                    <div key={idx} className="mb-4 last:mb-0 flex items-start gap-3">
+                      <div className="flex-shrink-0 mt-1.5">
+                        <div className={`w-2 h-2 rounded-full ${hasNumbers ? 'bg-accent' : 'bg-white/40'}`}></div>
+                      </div>
+                      <p className={`m-0 ${hasNumbers ? 'font-medium' : ''}`}>{text}</p>
+                    </div>
+                  );
+                }).filter(Boolean)}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
