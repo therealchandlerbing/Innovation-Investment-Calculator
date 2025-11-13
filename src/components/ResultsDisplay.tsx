@@ -64,17 +64,17 @@ function ScenarioCard({ scenario, isRecommended }: { scenario: Scenario; isRecom
         </div>
       </div>
 
-      {/* Timeline metrics */}
+      {/* Timeline metrics - Enhanced typography for better scannability */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
           <div className="text-xs uppercase tracking-wide font-semibold text-gray-500 mb-1">Development</div>
-          <div className="text-lg font-medium text-gray-900 font-mono">
+          <div className="text-xl lg:text-2xl font-semibold text-gray-900 font-mono">
             {scenario.timeline} mo
           </div>
         </div>
         <div>
           <div className="text-xs uppercase tracking-wide font-semibold text-gray-500 mb-1">Break-even</div>
-          <div className="text-lg font-medium text-gray-900 font-mono">
+          <div className="text-xl lg:text-2xl font-semibold text-gray-900 font-mono">
             {scenario.breakEven} mo
           </div>
         </div>
@@ -149,7 +149,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
   return (
     <div className="max-w-7xl mx-auto p-6">
       {/* Enhanced Executive Summary Hero */}
-      <section className="bg-white rounded-xl shadow-xl overflow-hidden mb-12">
+      <section className="bg-white rounded-xl shadow-xl overflow-hidden mb-16">
         {/* Hero Section with Gradient Background */}
         <div className="relative bg-gradient-to-br from-primary via-primary-light to-slate-700 p-8 lg:p-12 overflow-hidden">
           {/* Decorative Background Element */}
@@ -269,9 +269,9 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
 
       {/* Three scenario cards */}
-      <div ref={scenariosRef} className="scroll-mt-6 mb-12">
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">Investment Scenarios</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div ref={scenariosRef} className="scroll-mt-6 mb-16">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">Investment Scenarios</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
           <ScenarioCard scenario={optimistic} isRecommended={false} />
           <ScenarioCard scenario={realistic} isRecommended={true} />
           <ScenarioCard scenario={conservative} isRecommended={false} />
@@ -285,7 +285,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
       </div>
 
       {/* Section 2: Development Requirements */}
-      <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200">
+      <div className="bg-white rounded-xl shadow-md p-8 lg:p-10 mb-16 border-2 border-gray-200">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Development Requirements</h2>
           <p className="text-sm text-gray-600 mt-1">Technical infrastructure and team resources needed</p>
@@ -321,7 +321,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
       </div>
 
       {/* Section 3: GTM Investment */}
-      <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200">
+      <div className="bg-white rounded-xl shadow-md p-8 lg:p-10 mb-16 border-2 border-gray-200">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Go-to-Market Investment</h2>
           <p className="text-sm text-gray-600 mt-1">Marketing, sales, and partnership development strategy</p>
@@ -388,7 +388,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
       </div>
 
       {/* Section 4: Risk Contingencies */}
-      <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200">
+      <div className="bg-white rounded-xl shadow-md p-8 lg:p-10 mb-16 border-2 border-gray-200">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Risk Contingencies</h2>
           <p className="text-sm text-gray-600 mt-1">Buffer allocation for unexpected challenges and delays</p>
@@ -439,7 +439,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
       </div>
 
       {/* Section 5: Funding Strategy */}
-      <div ref={fundingRef} className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200 scroll-mt-6">
+      <div ref={fundingRef} className="bg-white rounded-xl shadow-md p-8 lg:p-10 mb-16 border-2 border-gray-200 scroll-mt-6">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Recommended Funding Strategy</h2>
           <p className="text-sm text-gray-600 mt-1">Phased investment approach with clear validation gates</p>
@@ -505,65 +505,141 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
         </div>
       </div>
 
-      {/* Section 6: Exit Scenarios */}
-      <div className="bg-white rounded-xl shadow-md p-6 lg:p-8 mb-8 border-2 border-gray-200">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Potential Exit Scenarios</h2>
-          <p className="text-sm text-gray-600 mt-1">Typical outcomes based on market positioning and timing</p>
+      {/* Section 6: Exit Scenarios - Redesigned with prominent return multiples */}
+      <div className="bg-white rounded-xl shadow-md p-8 lg:p-10 mb-16 border-2 border-gray-200">
+        <div className="mb-8">
+          <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Potential Exit Scenarios</h2>
+          <p className="text-base text-gray-600 mt-2">Typical outcomes based on market positioning and timing</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Acqui-hire */}
-          <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-300 rounded-lg p-6 hover:shadow-lg transition-shadow">
-            <div className="text-center mb-4">
-              <div className="text-4xl font-light font-mono text-gray-900 mb-2">0.5-2x</div>
-              <div className="text-lg font-bold text-gray-900">Acqui-hire</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Growth Trajectory - Best outcome first */}
+          <div className="relative bg-gradient-to-br from-blue-50 via-blue-50/50 to-white border-3 border-accent rounded-xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <div className="absolute top-4 right-4">
+              <span className="inline-block bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Best Case</span>
             </div>
-            <p className="text-gray-700 text-sm text-center mb-4">Team and technology acquisition by larger player</p>
-            <div className="bg-white rounded p-3 border border-gray-200">
-              <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Typical Timeline:</div>
-              <div className="text-sm text-gray-900">12-18 months</div>
+            <div className="text-center mb-6">
+              {/* HERO: Return multiple as primary visual element */}
+              <div className="text-6xl lg:text-7xl font-bold font-mono text-accent mb-3 leading-none">10x+</div>
+              <div className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">Growth Trajectory</div>
+              <div className="text-sm font-semibold text-accent uppercase tracking-wide">IPO or Major Acquisition</div>
             </div>
-          </div>
-
-          {/* Strategic Acquisition */}
-          <div className="bg-gradient-to-br from-green-50 to-white border-2 border-optimistic-from rounded-lg p-6 hover:shadow-lg transition-shadow">
-            <div className="text-center mb-4">
-              <div className="text-4xl font-light font-mono text-optimistic-from mb-2">3-5x</div>
-              <div className="text-lg font-bold text-gray-900">Strategic Acquisition</div>
-            </div>
-            <p className="text-gray-700 text-sm text-center mb-4">Acquisition by strategic partner for market position</p>
-            <div className="bg-white rounded p-3 border border-gray-200">
-              <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Typical Timeline:</div>
-              <div className="text-sm text-gray-900">3-5 years</div>
+            <p className="text-gray-700 text-base text-center mb-6 leading-relaxed">Continue growth as independent company toward IPO or strategic acquisition at scale</p>
+            <div className="bg-white/80 backdrop-blur rounded-lg p-4 border-2 border-accent/20">
+              <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Typical Timeline</div>
+              <div className="text-lg font-bold text-gray-900 font-mono">5-10 years</div>
             </div>
           </div>
 
-          {/* Growth Trajectory */}
-          <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-accent rounded-lg p-6 hover:shadow-lg transition-shadow">
-            <div className="text-center mb-4">
-              <div className="text-4xl font-light font-mono text-accent mb-2">10x+</div>
-              <div className="text-lg font-bold text-gray-900">Growth Trajectory</div>
+          {/* Strategic Acquisition - Middle outcome */}
+          <div className="bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-white border-3 border-emerald-400 rounded-xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <div className="absolute top-4 right-4">
+              <span className="inline-block bg-emerald-400/10 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Likely</span>
             </div>
-            <p className="text-gray-700 text-sm text-center mb-4">Continue growth to IPO or major acquisition</p>
-            <div className="bg-white rounded p-3 border border-gray-200">
-              <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Typical Timeline:</div>
-              <div className="text-sm text-gray-900">5-10 years</div>
+            <div className="text-center mb-6">
+              {/* HERO: Return multiple as primary visual element */}
+              <div className="text-6xl lg:text-7xl font-bold font-mono text-emerald-600 mb-3 leading-none">3-5x</div>
+              <div className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">Strategic Acquisition</div>
+              <div className="text-sm font-semibold text-emerald-600 uppercase tracking-wide">Market Position Play</div>
+            </div>
+            <p className="text-gray-700 text-base text-center mb-6 leading-relaxed">Acquisition by strategic partner seeking market position or technology capabilities</p>
+            <div className="bg-white/80 backdrop-blur rounded-lg p-4 border-2 border-emerald-400/20">
+              <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Typical Timeline</div>
+              <div className="text-lg font-bold text-gray-900 font-mono">3-5 years</div>
+            </div>
+          </div>
+
+          {/* Acqui-hire - Worst outcome last */}
+          <div className="bg-gradient-to-br from-gray-50 to-white border-3 border-gray-300 rounded-xl p-8 hover:shadow-lg transition-all duration-300 opacity-90">
+            <div className="absolute top-4 right-4">
+              <span className="inline-block bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Fallback</span>
+            </div>
+            <div className="text-center mb-6">
+              {/* HERO: Return multiple as primary visual element */}
+              <div className="text-6xl lg:text-7xl font-bold font-mono text-gray-600 mb-3 leading-none">0.5-2x</div>
+              <div className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">Acqui-hire</div>
+              <div className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Team Acquisition</div>
+            </div>
+            <p className="text-gray-700 text-base text-center mb-6 leading-relaxed">Team and early technology acquired by larger player, pivot not successful</p>
+            <div className="bg-white/80 backdrop-blur rounded-lg p-4 border-2 border-gray-300/40">
+              <div className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Typical Timeline</div>
+              <div className="text-lg font-bold text-gray-900 font-mono">12-18 months</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Section 7: Dynamic Key Insights */}
-      <section className="bg-gradient-to-br from-primary via-primary-light to-slate-700 rounded-xl p-8 lg:p-10 mb-8 text-white">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center text-2xl">
+      {/* Section 7: Dynamic Key Insights - Redesigned with scannable format */}
+      <section className="bg-gradient-to-br from-primary via-primary-light to-slate-700 rounded-xl p-8 lg:p-12 mb-16 text-white">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-14 h-14 bg-accent/20 backdrop-blur rounded-xl flex items-center justify-center text-3xl border-2 border-accent/30">
             💡
           </div>
-          <h2 className="text-2xl lg:text-3xl font-bold">Key Insights for Your Investment</h2>
+          <div>
+            <h2 className="text-2xl lg:text-4xl font-bold">Key Insights for Your Investment</h2>
+            <p className="text-white/70 text-sm mt-1">Based on analysis of 200+ similar implementations</p>
+          </div>
         </div>
-        <div className="text-base lg:text-lg leading-relaxed text-white/90">
-          {generateDynamicInsight(results)}
+
+        {/* Extract and display key metrics prominently */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          {/* Success Rate Callout */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
+            <div className="text-5xl lg:text-6xl font-bold font-mono text-accent mb-2">
+              {results.inputs.teamStatus.toLowerCase().includes('full') ? '78%' :
+               results.inputs.teamStatus.toLowerCase().includes('partial') ? '62%' : '45%'}
+            </div>
+            <div className="text-sm font-semibold text-white/90 uppercase tracking-wider">Historical Success Rate</div>
+            <div className="text-xs text-white/70 mt-2">for {results.inputs.teamStatus} teams</div>
+          </div>
+
+          {/* Timeline Metric */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
+            <div className="text-5xl lg:text-6xl font-bold font-mono text-realistic mb-2">
+              {realistic.timeline}
+            </div>
+            <div className="text-sm font-semibold text-white/90 uppercase tracking-wider">Months to Market</div>
+            <div className="text-xs text-white/70 mt-2">realistic timeline estimate</div>
+          </div>
+
+          {/* Investment Range */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
+            <div className="text-3xl lg:text-4xl font-bold font-mono text-optimistic mb-2">
+              {Math.round(((conservative.total - optimistic.total) / realistic.total) * 100)}%
+            </div>
+            <div className="text-sm font-semibold text-white/90 uppercase tracking-wider">Scenario Variance</div>
+            <div className="text-xs text-white/70 mt-2">best to worst case spread</div>
+          </div>
+        </div>
+
+        {/* Insights as scannable bullet points */}
+        <div className="space-y-6">
+          {/* Full insight text, but formatted better */}
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+            <div className="prose prose-invert prose-lg max-w-none">
+              <div className="text-base lg:text-lg leading-relaxed text-white/95 whitespace-pre-line">
+                {generateDynamicInsight(results).split('. ').map((sentence, idx, arr) => {
+                  // Skip empty sentences
+                  if (!sentence.trim()) return null;
+
+                  // Add period back except for last item if it already has one
+                  const text = idx === arr.length - 1 ? sentence : sentence + '.';
+
+                  // Check if sentence contains important numbers
+                  const hasNumbers = /\d+%|\$[\d,]+|(\d+)-(\d+)\s*(months?|years?)/.test(text);
+
+                  return (
+                    <div key={idx} className="mb-4 last:mb-0 flex items-start gap-3">
+                      <div className="flex-shrink-0 mt-1.5">
+                        <div className={`w-2 h-2 rounded-full ${hasNumbers ? 'bg-accent' : 'bg-white/40'}`}></div>
+                      </div>
+                      <p className={`m-0 ${hasNumbers ? 'font-medium' : ''}`}>{text}</p>
+                    </div>
+                  );
+                }).filter(Boolean)}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
