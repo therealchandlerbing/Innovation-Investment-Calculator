@@ -595,7 +595,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
           {/* Timeline Metric */}
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
-            <div className="text-5xl lg:text-6xl font-bold font-mono text-realistic mb-2">
+            <div className="text-5xl lg:text-6xl font-bold font-mono text-realistic-from mb-2">
               {realistic.timeline}
             </div>
             <div className="text-sm font-semibold text-white/90 uppercase tracking-wider">Months to Market</div>
@@ -604,7 +604,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
           {/* Investment Range */}
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
-            <div className="text-3xl lg:text-4xl font-bold font-mono text-optimistic mb-2">
+            <div className="text-3xl lg:text-4xl font-bold font-mono text-optimistic-from mb-2">
               {Math.round(((conservative.total - optimistic.total) / realistic.total) * 100)}%
             </div>
             <div className="text-sm font-semibold text-white/90 uppercase tracking-wider">Scenario Variance</div>

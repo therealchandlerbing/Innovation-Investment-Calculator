@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test App</title>
+  <style>
+    body { margin: 20px; font-family: Arial; }
+    #status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>App Test</h1>
+  <div id="status">Testing...</div>
+  <iframe id="testFrame" src="dist/index.html" width="100%" height="600" style="border: 1px solid #ccc; margin-top: 20px;"></iframe>
+
+  <script>
+    const statusDiv = document.getElementById('status');
+    const frame = document.getElementById('testFrame');
+
+    frame.onload = function() {
+      try {
+        const frameDoc = frame.contentDocument || frame.contentWindow.document;
+        const root = frameDoc.getElementById('root');
+
+        setTimeout(() => {
+          if (root && root.children.length > 0) {
+            statusDiv.textContent = '✅ App loaded successfully! Root has ' + root.children.length + ' children';
+            statusDiv.className = 'success';
+          } else {
+            statusDiv.textContent = '❌ App failed to load - root div is empty';
+            statusDiv.className = 'error';
+            console.error('Root element:', root);
+          }
+        }, 1000);
+      } catch (e) {
+        statusDiv.textContent = '❌ Cannot access iframe: ' + e.message;
+        statusDiv.className = 'error';
+      }
+    };
+
+    frame.onerror = function(e) {
+      statusDiv.textContent = '❌ Frame error: ' + e;
+      statusDiv.className = 'error';
+    };
+  </script>
+</body>
+</html>
