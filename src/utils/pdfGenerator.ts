@@ -22,39 +22,38 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   pdf.setFillColor(59, 130, 246, 15);
   pdf.circle(pageWidth - 30, 30, 50, 'F');
 
-  // THE BIG NUMBER - This is the hook
-  pdf.setFontSize(72);
+  // THE BIG NUMBER - This is the hook (increased from 72pt to 96pt)
+  pdf.setFontSize(96);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(255, 255, 255);
-  pdf.text(formatCurrency(realisticScenario.total), pageWidth / 2, 90, { align: 'center' });
+  pdf.text(formatCurrency(realisticScenario.total), pageWidth / 2, 95, { align: 'center' });
 
-  // Value proposition
-  pdf.setFontSize(18);
+  // Value proposition - supporting metrics
+  pdf.setFontSize(16);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(200, 200, 200);
-  pdf.text(`${realisticScenario.timeline} months to market-ready`, pageWidth / 2, 110, { align: 'center' });
-  pdf.text(`Break-even: Month ${realisticScenario.breakEven}`, pageWidth / 2, 125, { align: 'center' });
+  pdf.text(`${realisticScenario.timeline} months to market  •  Break-even: Month ${realisticScenario.breakEven}`, pageWidth / 2, 115, { align: 'center' });
 
   // Title and context
   pdf.setFontSize(24);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(255, 255, 255);
-  pdf.text('Innovation Investment Analysis', pageWidth / 2, 155, { align: 'center' });
+  pdf.text('Innovation Investment Analysis', pageWidth / 2, 145, { align: 'center' });
 
   // Strategic identity line
   pdf.setFontSize(12);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(100, 200, 255);
-  pdf.text(`${inputs.technologyType} | ${inputs.currentStage} | ${inputs.geographicLocation}`, pageWidth / 2, 167, { align: 'center' });
+  pdf.text(`${inputs.technologyType} | ${inputs.currentStage} | ${inputs.geographicLocation}`, pageWidth / 2, 158, { align: 'center' });
 
   pdf.setFontSize(13);
   pdf.setTextColor(150, 150, 150);
-  pdf.text(inputs.targetMarket, pageWidth / 2, 180, { align: 'center' });
+  pdf.text(inputs.targetMarket, pageWidth / 2, 172, { align: 'center' });
 
-  // Trust signals
-  pdf.setFontSize(10);
-  pdf.setTextColor(120, 120, 120);
-  pdf.text('Based on 200+ implementations • 30 technology types • 33 market segments', pageWidth / 2, 245, { align: 'center' });
+  // Trust signals - moved higher and more prominent
+  pdf.setFontSize(11);
+  pdf.setTextColor(100, 200, 255);
+  pdf.text('Based on 200+ implementations • 30 technology types • 33 market segments', pageWidth / 2, 200, { align: 'center' });
 
   // Footer
   pdf.setFontSize(10);
@@ -71,61 +70,22 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
 
   let yPos = 50;
 
-  // Context box with gradient background
+  // Context box with condensed strategic summary
   pdf.setFillColor(249, 250, 251);
-  pdf.roundedRect(margin, yPos, pageWidth - 2 * margin, 55, 3, 3, 'F');
+  pdf.roundedRect(margin, yPos, pageWidth - 2 * margin, 35, 3, 3, 'F');
 
   yPos += 8;
 
-  // The Innovation
-  pdf.setFontSize(10);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(59, 130, 246);
-  pdf.text('THE INNOVATION', margin + 5, yPos);
-
-  yPos += 6;
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(0, 0, 0);
 
-  // Generate contextual description based on inputs
-  const innovationDesc = getInnovationContext(inputs);
-  const wrappedInnovation = pdf.splitTextToSize(innovationDesc, pageWidth - 2 * margin - 10);
-  pdf.text(wrappedInnovation, margin + 5, yPos);
-  yPos += (wrappedInnovation.length * 4) + 5;
+  // Generate condensed strategic summary
+  const strategicSummary = getCondensedStrategicSummary(inputs, realisticScenario);
+  const wrappedSummary = pdf.splitTextToSize(strategicSummary, pageWidth - 2 * margin - 10);
+  pdf.text(wrappedSummary, margin + 5, yPos);
 
-  // Market Opportunity
-  pdf.setFontSize(10);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(16, 185, 129);
-  pdf.text('MARKET OPPORTUNITY', margin + 5, yPos);
-
-  yPos += 6;
-  pdf.setFontSize(9);
-  pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(0, 0, 0);
-
-  const marketDesc = getMarketContext(inputs);
-  const wrappedMarket = pdf.splitTextToSize(marketDesc, pageWidth - 2 * margin - 10);
-  pdf.text(wrappedMarket, margin + 5, yPos);
-  yPos += (wrappedMarket.length * 4) + 5;
-
-  // Investment Thesis
-  pdf.setFontSize(10);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(245, 158, 11);
-  pdf.text('INVESTMENT THESIS', margin + 5, yPos);
-
-  yPos += 6;
-  pdf.setFontSize(9);
-  pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(0, 0, 0);
-
-  const thesisDesc = getInvestmentThesis(inputs, realisticScenario);
-  const wrappedThesis = pdf.splitTextToSize(thesisDesc, pageWidth - 2 * margin - 10);
-  pdf.text(wrappedThesis, margin + 5, yPos);
-
-  yPos += (wrappedThesis.length * 4) + 15;
+  yPos += (wrappedSummary.length * 4) + 15;
 
   // Market & Regulatory Context
   pdf.setFontSize(12);
@@ -210,24 +170,24 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
   // Header
   addSectionHeader(pdf, 'Executive Summary', 'Your Investment Decision', margin, 25);
 
-  yPos = 55;
+  yPos = 50;
 
-  // THE NUMBER - Make it dominate
-  pdf.setFontSize(56);
+  // THE NUMBER - Make it dominate (increased from 56pt to 72pt)
+  pdf.setFontSize(72);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(0, 0, 0);
   pdf.text(formatCurrency(realisticScenario.total), pageWidth / 2, yPos, { align: 'center' });
 
-  yPos += 12;
+  yPos += 15;
 
   // Confidence range directly below
-  pdf.setFontSize(11);
+  pdf.setFontSize(12);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(100, 100, 100);
   pdf.text(`Confidence Range: ${formatCurrency(results.confidenceInterval.min)} - ${formatCurrency(results.confidenceInterval.max)} (±15%)`,
     pageWidth / 2, yPos, { align: 'center' });
 
-  yPos += 20;
+  yPos += 22;
 
   // Key metrics grid
   const metrics = [
@@ -652,42 +612,47 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
 
   const exitScenarios = [
     {
-      name: 'Acqui-hire (Risk Mitigation)',
-      multiples: [0.3, 0.8],
-      timeline: '12-18 months',
-      desc: `Talent + IP salvage scenario if market validation fails. ${acquirers.acquihire}. This is NOT a success outcome—it's capital preservation when pivoting isn't viable.`,
-      color: [239, 68, 68] as [number, number, number], // Red to indicate this is failure mitigation
-      risk: 'HIGH RISK'
+      name: 'Growth Trajectory (IPO/Major Exit)',
+      multiples: exitMultiples.growth,
+      timeline: '7-12 years',
+      desc: `Scale to market leadership. ${acquirers.growth}. Requires achieving ${exitMultiples.revenueTarget} and category-defining position. Historical precedent: ${exitMultiples.precedent}.`,
+      color: [16, 185, 129] as [number, number, number], // Green for success
+      risk: 'HIGH AMBITION',
+      height: 52 // Largest
     },
     {
       name: 'Strategic Acquisition',
       multiples: exitMultiples.strategic,
       timeline: '3-5 years',
       desc: `Early-stage acquisition for technology/market position. ${acquirers.strategic}. Typical for innovations with proven traction but pre-scale economics.`,
-      color: [16, 185, 129] as [number, number, number],
-      risk: 'MODERATE'
+      color: [59, 130, 246] as [number, number, number], // Blue
+      risk: 'MODERATE',
+      height: 48 // Standard
     },
     {
       name: 'Lifestyle/Sustainable Business',
       multiples: [2, 4],
       timeline: '3-7 years',
-      desc: `No exit planned. Build profitable, cash-flowing business with founder control. Typical margins in ${inputs.targetMarket}: 20-40%. Founder-friendly returns through distributions, not liquidity events.`,
+      desc: `Build profitable, cash-flowing business with founder control. Typical margins in ${inputs.targetMarket}: 20-40%. Returns through distributions, not liquidity events.`,
       color: [139, 92, 246] as [number, number, number], // Purple
-      risk: 'MODERATE'
+      risk: 'MODERATE',
+      height: 44 // Smaller
     },
     {
-      name: 'Growth Trajectory (IPO/Major Exit)',
-      multiples: exitMultiples.growth,
-      timeline: '7-12 years',
-      desc: `Scale to market leadership. ${acquirers.growth}. Requires achieving ${exitMultiples.revenueTarget} and category-defining position. Historical precedent: ${exitMultiples.precedent}.`,
-      color: [59, 130, 246] as [number, number, number],
-      risk: 'HIGH AMBITION'
+      name: 'Capital Preservation',
+      multiples: [0.3, 0.8],
+      timeline: '12-18 months',
+      desc: `Downside scenario: ${acquirers.acquihire}. Partial capital recovery if market validation doesn't materialize.`,
+      color: [156, 163, 175] as [number, number, number], // Gray for de-emphasis
+      risk: 'DOWNSIDE',
+      height: 40 // Smallest
     },
   ];
 
   exitScenarios.forEach((exit) => {
     const lowValue = baseInvestment * exit.multiples[0];
     const highValue = baseInvestment * exit.multiples[1];
+    const boxHeight = exit.height || 48;
 
     // Check if we need a new page
     if (yPos > pageHeight - 60) {
@@ -699,10 +664,10 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
 
     // Gradient background showing increasing potential
     pdf.setFillColor(...exit.color, 20);
-    pdf.roundedRect(margin, yPos, pageWidth - 2 * margin, 48, 3, 3, 'F');
+    pdf.roundedRect(margin, yPos, pageWidth - 2 * margin, boxHeight, 3, 3, 'F');
     pdf.setDrawColor(...exit.color);
     pdf.setLineWidth(2);
-    pdf.line(margin, yPos + 48, pageWidth - margin, yPos + 48);
+    pdf.line(margin, yPos + boxHeight, pageWidth - margin, yPos + boxHeight);
 
     // Risk badge in top-right corner
     pdf.setFillColor(...exit.color);
@@ -745,7 +710,7 @@ export function generatePDF(inputs: UserInputs, results: CalculationResults, sta
     const descLines = pdf.splitTextToSize(exit.desc, pageWidth - 2 * margin - 55);
     pdf.text(descLines.slice(0, 3), margin + 50, yPos + 24);
 
-    yPos += 54;
+    yPos += boxHeight + 6; // Use variable height + spacing
   });
 
   // Note about returns
@@ -1025,58 +990,29 @@ function addPageFooter(pdf: jsPDF): void {
   pdf.text('Innovation Investment Calculator • Professional Investment Analysis', pageWidth / 2, pageHeight - 10, { align: 'center' });
 }
 
-// Helper: Generate innovation context based on inputs
-function getInnovationContext(inputs: UserInputs): string {
-  const stage = inputs.currentStage.toLowerCase();
+// Helper: Generate condensed strategic summary (combines innovation, market, thesis)
+function getCondensedStrategicSummary(inputs: UserInputs, scenario: any): string {
   const tech = inputs.technologyType;
-
-  if (stage.includes('concept')) {
-    return `This ${tech} innovation is at the concept/validation stage, requiring proof-of-concept demonstration and initial technical feasibility validation. The innovation targets ${inputs.targetMarket}, a sector that demands rigorous validation before market entry.`;
-  } else if (stage.includes('prototype')) {
-    return `This ${tech} solution has reached functional prototype stage with demonstrated technical viability. The next phase focuses on market validation and regulatory pathway confirmation for ${inputs.targetMarket}.`;
-  } else if (stage.includes('pilot')) {
-    return `This ${tech} innovation has successfully completed pilot testing and early customer validation. The focus now shifts to scaling production/delivery and expanding market penetration within ${inputs.targetMarket}.`;
-  } else {
-    return `This ${tech} solution is market-ready, with proven product-market fit. The investment focus is on go-to-market acceleration, sales infrastructure, and market expansion within ${inputs.targetMarket}.`;
-  }
-}
-
-// Helper: Generate market context
-function getMarketContext(inputs: UserInputs): string {
-  const market = inputs.targetMarket.toLowerCase();
-
-  if (market.includes('federal') || market.includes('government')) {
-    return `Federal/government markets offer substantial contract values but require extended procurement cycles (12-24 months) and compliance infrastructure. Market entry costs are high, but customer lifetime value and retention rates are exceptional once established.`;
-  } else if (market.includes('hospital') || market.includes('healthcare')) {
-    return `Healthcare systems demand clinical evidence and integration with existing workflows. Decision cycles are 9-18 months, but successful adoption creates strong network effects and high switching costs for competitors.`;
-  } else if (market.includes('enterprise') || market.includes('corporate')) {
-    return `Enterprise markets require scalable sales infrastructure and multi-stakeholder decision processes. Average sales cycles of 6-12 months, but high-value contracts and expansion revenue potential justify the investment.`;
-  } else if (market.includes('research') || market.includes('academic')) {
-    return `Research institutions prioritize innovation and early adoption but operate with constrained budgets and grant-dependent procurement. Lower initial contract values are offset by intellectual validation and reference customer value.`;
-  } else {
-    return `This market segment shows strong demand for innovative solutions with favorable competitive dynamics. Market entry requires strategic positioning and customer education to establish product-market fit.`;
-  }
-}
-
-// Helper: Generate investment thesis
-function getInvestmentThesis(inputs: UserInputs, scenario: any): string {
+  const market = inputs.targetMarket;
   const timeline = scenario.timeline;
   const breakEven = scenario.breakEven;
-  const team = inputs.teamStatus;
+  const total = formatCurrency(scenario.total);
 
-  let thesis = `This ${formatCurrency(scenario.total)} investment positions the innovation for ${timeline}-month market entry with break-even at month ${breakEven}. `;
+  // Build condensed 2-sentence summary
+  let summary = `This ${tech} innovation at ${inputs.currentStage} targets ${market}, requiring ${total} over ${timeline} months to reach market-readiness with break-even at month ${breakEven}. `;
 
-  if (team === 'Full team assembled') {
-    thesis += `The complete team structure reduces execution risk and accelerates time-to-market. `;
-  } else if (team === 'Partial team') {
-    thesis += `Partial team structure requires strategic hiring, budgeted within development costs. `;
+  // Add market-specific context
+  if (market.toLowerCase().includes('hospital') || market.toLowerCase().includes('healthcare')) {
+    summary += `Healthcare systems demand clinical evidence and regulatory clearance, but successful adoption creates strong network effects and high switching costs. Staged funding approach with validation gates de-risks capital deployment while preserving strategic optionality.`;
+  } else if (market.toLowerCase().includes('federal') || market.toLowerCase().includes('government')) {
+    summary += `Government markets offer substantial contract values but require extended procurement cycles and compliance infrastructure. Staged funding with agency validation milestones aligns with federal budget cycles and reduces execution risk.`;
+  } else if (market.toLowerCase().includes('enterprise') || market.toLowerCase().includes('corporate')) {
+    summary += `Enterprise adoption requires scalable sales infrastructure and multi-stakeholder decision processes. Staged approach allows for market validation before full GTM investment and preserves pivot optionality.`;
   } else {
-    thesis += `Solo founder structure demands early team assembly, critical for Phase 1 validation. `;
+    summary += `Staged funding approach with validation gates de-risks capital deployment, allows market feedback integration, and preserves strategic flexibility for pivots or acceleration based on early traction.`;
   }
 
-  thesis += `Staged funding approach with validation gates de-risks capital deployment and preserves optionality for strategic pivots or acceleration.`;
-
-  return thesis;
+  return summary;
 }
 
 // Helper: Generate regulatory context
