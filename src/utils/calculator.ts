@@ -30,11 +30,12 @@ export function calculateInvestment(inputs: UserInputs): CalculationResults {
   const realisticGTMYear1 = gtmData.year1 * SCENARIO_MODIFIERS.realistic.gtm * geoMultiplier;
   const realisticGTMYears23 = gtmData.years23 * geoMultiplier;
 
-  // Risk Buffer = development × 0.4
-  const realisticRiskBuffer = realisticTotalDev * RISK_BUFFER_PERCENTAGE;
+  // Risk Buffer = 15% of base costs (development + regulatory + GTM)
+  const realisticBaseCosts = realisticTotalDev + realisticGTMYear1;
+  const realisticRiskBuffer = realisticBaseCosts * RISK_BUFFER_PERCENTAGE;
 
-  // Total = Development + GTM + RiskBuffer
-  const realisticTotal = realisticTotalDev + realisticGTMYear1 + realisticRiskBuffer;
+  // Total = Base Costs + Risk Buffer
+  const realisticTotal = realisticBaseCosts + realisticRiskBuffer;
 
   // Timeline and Break-even
   const realisticTimeline = Math.round(developmentMonths * SCENARIO_MODIFIERS.realistic.timeline);
@@ -62,11 +63,12 @@ export function calculateInvestment(inputs: UserInputs): CalculationResults {
   const optimisticGTMYear1 = gtmData.year1 * SCENARIO_MODIFIERS.optimistic.gtm * geoMultiplier;
   const optimisticGTMYears23 = gtmData.years23 * geoMultiplier;
 
-  // Risk Buffer = development × 0.4
-  const optimisticRiskBuffer = optimisticTotalDev * RISK_BUFFER_PERCENTAGE;
+  // Risk Buffer = 15% of base costs (development + regulatory + GTM)
+  const optimisticBaseCosts = optimisticTotalDev + optimisticGTMYear1;
+  const optimisticRiskBuffer = optimisticBaseCosts * RISK_BUFFER_PERCENTAGE;
 
-  // Total
-  const optimisticTotal = optimisticTotalDev + optimisticGTMYear1 + optimisticRiskBuffer;
+  // Total = Base Costs + Risk Buffer
+  const optimisticTotal = optimisticBaseCosts + optimisticRiskBuffer;
 
   // Timeline and Break-even
   const optimisticTimeline = Math.round(developmentMonths * SCENARIO_MODIFIERS.optimistic.timeline);
@@ -94,11 +96,12 @@ export function calculateInvestment(inputs: UserInputs): CalculationResults {
   const conservativeGTMYear1 = gtmData.year1 * SCENARIO_MODIFIERS.conservative.gtm * geoMultiplier;
   const conservativeGTMYears23 = gtmData.years23 * geoMultiplier;
 
-  // Risk Buffer = development × 0.4
-  const conservativeRiskBuffer = conservativeTotalDev * RISK_BUFFER_PERCENTAGE;
+  // Risk Buffer = 15% of base costs (development + regulatory + GTM)
+  const conservativeBaseCosts = conservativeTotalDev + conservativeGTMYear1;
+  const conservativeRiskBuffer = conservativeBaseCosts * RISK_BUFFER_PERCENTAGE;
 
-  // Total
-  const conservativeTotal = conservativeTotalDev + conservativeGTMYear1 + conservativeRiskBuffer;
+  // Total = Base Costs + Risk Buffer
+  const conservativeTotal = conservativeBaseCosts + conservativeRiskBuffer;
 
   // Timeline and Break-even
   const conservativeTimeline = Math.round(developmentMonths * SCENARIO_MODIFIERS.conservative.timeline);
