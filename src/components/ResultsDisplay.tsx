@@ -514,7 +514,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Growth Trajectory - Best outcome first */}
-          <div className="relative bg-gradient-to-br from-blue-50 via-blue-50/50 to-white border-3 border-accent rounded-xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+          <div className="relative bg-gradient-to-br from-blue-50 via-blue-50/50 to-white border-4 border-accent rounded-xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
             <div className="absolute top-4 right-4">
               <span className="inline-block bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Best Case</span>
             </div>
@@ -532,7 +532,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           </div>
 
           {/* Strategic Acquisition - Middle outcome */}
-          <div className="bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-white border-3 border-emerald-400 rounded-xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+          <div className="relative bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-white border-4 border-emerald-400 rounded-xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
             <div className="absolute top-4 right-4">
               <span className="inline-block bg-emerald-400/10 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Likely</span>
             </div>
@@ -550,7 +550,7 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
           </div>
 
           {/* Acqui-hire - Worst outcome last */}
-          <div className="bg-gradient-to-br from-gray-50 to-white border-3 border-gray-300 rounded-xl p-8 hover:shadow-lg transition-all duration-300 opacity-90">
+          <div className="relative bg-gradient-to-br from-gray-50 to-white border-4 border-gray-300 rounded-xl p-8 hover:shadow-lg transition-all duration-300 opacity-90">
             <div className="absolute top-4 right-4">
               <span className="inline-block bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Fallback</span>
             </div>
@@ -616,8 +616,8 @@ export default function ResultsDisplay({ results, onViewStagedFunding, onExport 
         <div className="space-y-6">
           {/* Full insight text, but formatted better */}
           <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-            <div className="prose prose-invert prose-lg max-w-none">
-              <div className="text-base lg:text-lg leading-relaxed text-white/95 whitespace-pre-line">
+            <div className="max-w-none">
+              <div className="text-base lg:text-lg leading-relaxed text-white/95">
                 {generateDynamicInsight(results).split('. ').map((sentence, idx, arr) => {
                   // Skip empty sentences
                   if (!sentence.trim()) return null;
