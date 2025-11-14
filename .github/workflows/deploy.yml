@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main, claude/follow-exact-prompt-011CUztytHd6mDZT4kgcCCxL, claude/innovation-calculator-design-overhaul-011CV55oAFJTAhWhxh6R2viF ]
+    branches: [ main, claude/follow-exact-prompt-011CUztytHd6mDZT4kgcCCxL, claude/innovation-calculator-design-overhaul-011CV55oAFJTAhWhxh6R2viF, claude/fix-calculator-github-rendering-01D7xu9YztyLGviByErbUYWg ]
 
 permissions:
   contents: read
