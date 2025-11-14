@@ -53,8 +53,8 @@ function PhaseCard({ phase, index, cumulativeInvestment }: { phase: FundingPhase
         </div>
       </div>
 
-      <div className="p-8 pt-10">
-        <h3 className="text-2xl font-bold text-white mb-6">{phase.name}</h3>
+      <div className="p-10 pt-12">
+        <h3 className="text-3xl font-bold text-white mb-8">{phase.name}</h3>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
@@ -103,21 +103,22 @@ function PhaseCard({ phase, index, cumulativeInvestment }: { phase: FundingPhase
 function DecisionGate({ phase, index }: { phase: FundingPhase; index: number }) {
   const gateIcons = ['🔍', '✅', '🎯'];
   const gateLabels = ['Validation Checkpoint', 'Traction Checkpoint', 'Scale Checkpoint'];
+  const gateColors = ['border-blue-500 bg-blue-50', 'border-emerald-500 bg-emerald-50', 'border-amber-500 bg-amber-50'];
 
   return (
     <div className="flex items-center justify-center px-4">
-      <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-6 min-w-[200px]">
+      <div className={`bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100 rounded-2xl shadow-2xl border-4 ${gateColors[index].split(' ')[0]} p-10 min-w-[320px] transform hover:scale-105 transition-all duration-300`}>
         <div className="text-center">
-          <div className="text-4xl mb-3">{gateIcons[index]}</div>
-          <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+          <div className="text-6xl mb-5">{gateIcons[index]}</div>
+          <div className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-4 bg-white/60 px-4 py-2 rounded-lg">
             {gateLabels[index]}
           </div>
-          <div className="text-sm font-semibold text-gray-900 mb-3">
+          <div className="text-lg font-bold text-gray-900 mb-6 leading-relaxed px-2">
             {phase.decisionGate}
           </div>
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span className="text-xs text-gray-600 font-medium">GO / NO-GO</span>
+          <div className="flex items-center justify-center gap-3 bg-white/80 rounded-lg p-4 border-2 border-green-500/30">
+            <div className="w-5 h-5 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-base text-gray-900 font-bold">GO / NO-GO DECISION</span>
           </div>
         </div>
       </div>
@@ -141,15 +142,15 @@ export default function StagedFundingDisplay({ stagedFunding, onBack }: StagedFu
   return (
     <div className="max-w-7xl mx-auto p-6 pb-20">
       {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Strategic Staged Funding Model</h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+      <div className="text-center mb-16">
+        <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Strategic Staged Funding Model</h1>
+        <p className="text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
           Systematically de-risk your investment with a phased approach backed by historical data
         </p>
       </div>
 
       {/* Summary stats with professional styling */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border-t-4 border-t-blue-500 shadow-xl">
           <div className="text-xs text-white/60 uppercase tracking-wide mb-2">Total Investment</div>
           <div className="text-4xl font-light font-mono text-white mb-2">
@@ -176,9 +177,9 @@ export default function StagedFundingDisplay({ stagedFunding, onBack }: StagedFu
       </div>
 
       {/* Visual Timeline */}
-      <div className="mb-16">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Investment Journey</h2>
+      <div className="mb-20">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-gray-900">Investment Journey</h2>
           <div className="text-sm text-gray-600">
             <span className="inline-flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
@@ -215,9 +216,9 @@ export default function StagedFundingDisplay({ stagedFunding, onBack }: StagedFu
       </div>
 
       {/* Phase cards with gates */}
-      <div className="mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Phase Details</h2>
-        <div className="grid grid-cols-1 gap-8">
+      <div className="mb-20">
+        <h2 className="text-3xl font-bold text-gray-900 mb-10">Phase Details</h2>
+        <div className="grid grid-cols-1 gap-12">
           {stagedFunding.phases.map((phase, index) => (
             <div key={phase.name}>
               <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-center">
@@ -239,7 +240,7 @@ export default function StagedFundingDisplay({ stagedFunding, onBack }: StagedFu
                 )}
               </div>
               {index < stagedFunding.phases.length - 1 && (
-                <div className="mt-8 mb-8">
+                <div className="my-12">
                   <DecisionGate phase={phase} index={index} />
                 </div>
               )}
@@ -249,9 +250,9 @@ export default function StagedFundingDisplay({ stagedFunding, onBack }: StagedFu
       </div>
 
       {/* Strategic benefits */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 mb-12 border border-blue-200">
-        <h3 className="text-2xl font-bold text-gray-900 mb-6">Why Staged Funding De-Risks Your Investment</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-10 lg:p-12 mb-16 border-2 border-blue-200 shadow-lg">
+        <h3 className="text-3xl font-bold text-gray-900 mb-10">Why Staged Funding De-Risks Your Investment</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
             <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
